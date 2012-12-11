@@ -1,0 +1,17 @@
+{
+    "name": "pounard/php-config",
+    "description": "Simple configuration registry PHP interface",
+    "authors": [
+        {
+            "name": "Pierre Rineau",
+            "email": "pierre.rineau-php@processus.org",
+            "homepage": "http://blog.processus.org",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Config": "src/"
+        }
+    }
+}
