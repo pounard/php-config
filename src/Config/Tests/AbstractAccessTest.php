@@ -61,46 +61,55 @@ abstract class AbstractAccessTest extends \PHPUnit_Framework_TestCase
                 $this->assertTrue(true, "Got an exception on invalid path");
             }
         }
+    }
+
+    public function testArrayAccess()
+    {
+        $cursor = $this->backend;
+
+        // At the beginning everything is empty
+        $this->assertSame(null, $cursor['test1']);
+
+        // Ensure set works
+        $cursor['test1'] = 42;
+        $this->assertSame(42, $cursor['test1']);
+
+        // Now ensure that both hierarchy is created dynamically and that
+        // the count() method only count entries
+        $cursor['a.b.c'] = 13;
+        $this->assertSame(13, $cursor['a.b.c']);
+        $this->assertCount(2, $cursor);
 
         /*
-        $subscription = $this->channel->subscribe();
-        $this->assertInstanceOf('\APubSub\SubscriptionInterface', $subscription);
-
-        $id = $subscription->getId();
-        $this->assertFalse(empty($id));
-
-        $channel = $subscription->getChannel();
-        // Depending on the implementation, the instance might not be the same
-        // so only check for ids to be the same
-        $this->assertSame($channel->getId(), $this->channel->getId());
-
-        // Per definition a new subscription is always inactive
-        $this->assertFalse($subscription->isActive());
-
-        try {
-            $subscription->getStartTime();
-            $this->fail("Subscriber should not have a start time");
-        } catch (\Exception $e) {
-        }
-
-        // Should not raise any exception
-        $subscription->getStopTime();
-
-        $loaded = $this->backend->getSubscription($subscription->getId());
-        $this->assertSame(get_class($subscription), get_class($loaded));
-        $this->assertSame($subscription->getId(), $loaded->getId());
-        $this->assertFalse($loaded->isActive());
-
-        $this->assertSame($this->channel->getId(), $subscription->getChannel()->getId());
-        $this->assertSame($this->channel->getId(), $loaded->getChannel()->getId());
-
-        $subscription->activate();
-
-        try {
-            $subscription->getStartTime();
-        } catch (\Exception $e) {
-            $this->fail("Subscriber should have a start time");
-        }
+        unset($cursor['a'];
+        $this->assertSame(null, $cursor['a.b.c']);
+        $this->assertCount(1, $cursor);
          */
+    }
+
+    public function testInternalCursor()
+    {
+        $cursor = $this->backend;
+
+        $cursor['a.b.c'] = 11;
+
+        // Internal cursor got it right
+        $cursor2 = $cursor->getCursor('a.b');
+        $this->assertSame(11, $cursor2['c']);
+
+        // Modify value from second cursor and check first cursor sees it
+        $cursor2['d'] = 7;
+        $this->assertSame(7, $cursor['a.b.d']);
+
+        // Reverse!
+        $cursor['a.b.e'] = 21;
+        $this->assertSame(21, $cursor2['e']);
+
+        // @todo Check unset too
+    }
+
+    public function testIntrospection()
+    {
+        // @todo Check iterators
     }
 }
