@@ -3,6 +3,7 @@
 namespace Config\Impl;
 
 use Config\ConfigSchemaInterface;
+use Config\ConfigType;
 
 /**
  * Schema (meta information) about a single entry

@@ -40,7 +40,7 @@ Basic usage
     }
 
     // And introspect schema too
-    $entrySchema = $cursor->getEntrySchema('a.b.c');
+    $entrySchema = $cursor->getSchema('a.b.c');
     echo $entrySchema->getShortDescription(), "\n",
          $entrySchema->getType(), "\n";
 

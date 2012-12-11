@@ -3,6 +3,7 @@
 namespace Config\Impl\Memory;
 
 use Config\ConfigHelper;
+use Config\ConfigType;
 use Config\Impl\AbstractCursor;
 use Config\Impl\DefaultSchema;
 use Config\InvalidPathException;
@@ -220,7 +221,7 @@ class MemoryCursor extends AbstractCursor implements \IteratorAggregate
     {
         $value = $this->get($path);
 
-        return new DefaultSchema(\ConfigType::getType($value));
+        return new DefaultSchema(ConfigType::getType($value));
     }
 
     /**

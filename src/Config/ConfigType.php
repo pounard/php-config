@@ -1,5 +1,7 @@
 <?php
 
+namespace Config;
+
 /**
  * Describe all handled data types
  */
