@@ -8,8 +8,18 @@ use Config\Impl\DefaultSchema;
 use Config\InvalidPathException;
 
 /**
- * Array config does not support list or hashmap value types, since it does
- * everything schema less and typed dynamically
+ * Array based implementation of config cursor
+ *
+ * This implementation can not support list or hashmap value types because it
+ * types everything dynamically and works schema less; For example, this:
+ * @code
+ *   $cursor['a.b.c'] = 12;
+ * @endcode
+ * Will be equivalent to this:
+ * @code
+ *   $cursor['a'] = array('b' => array('c' => 12));
+ * @endcode
+ * Disregarding the original interface documentation 
  */
 class MemoryCursor extends AbstractCursor implements \IteratorAggregate
 {
