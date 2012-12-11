@@ -24,8 +24,7 @@ Basic usage
     $config['a.b.c'] = 42;
 
     // Get a sub tree cursor
-    $cursor = $config['a.b'];
-
+    $cursor = $config->getCursor('a.b');
     // Works with relative path, this echoes 42
     echo $cursor['c'];
 
@@ -40,7 +39,7 @@ Basic usage
     }
 
     // And introspect schema too
-    $entrySchema = $cursor->getSchema('a.b.c');
+    $entrySchema = $config->getSchema('a.b.c');
     echo $entrySchema->getShortDescription(), "\n",
          $entrySchema->getType(), "\n";
 

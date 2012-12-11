@@ -167,14 +167,12 @@ class MemoryCursor extends AbstractCursor implements \IteratorAggregate
      * (non-PHPdoc)
      * @see \Config\ConfigCursorInterface::get()
      */
-    public function get($path, $default = null)
+    public function get($path)
     {
         $ret = &$this->findPath($path);
 
         // Array is either an error, either a section, user asked for a value
-        if (is_array($ret)) {
-            return $default;
-        } else {
+        if (!is_array($ret)) {
             return $ret;
         }
     }

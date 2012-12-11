@@ -104,18 +104,12 @@ interface ConfigCursorInterface extends \Countable, \ArrayAccess, \Traversable
      * Get a single entry value
      *
      * @param string $path          Path for which to get data
-     * @param mixed $default        If set the code will not throw exceptions
-     *                              if the value is not found, but it will
-     *                              return the default instead. Note that in
-     *                              case it finds a section instead, exceptions
-     *                              will still be raised. Null values cannot be
-     *                              used as default
      *
      * @return mixed                Whatever exists at the specified path per
      *                              default this will never throw exception if
      *                              path syntax is incorrect
      */
-    public function get($path, $default = null);
+    public function get($path);
 
     /**
      * Set value at specified path or key
