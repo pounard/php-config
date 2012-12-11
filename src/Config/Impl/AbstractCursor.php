@@ -8,7 +8,9 @@ use Config\ParentNotFoundException;
 /**
  * Base implementation that would fit most needs
  */
-abstract class AbstractConfig implements ConfigCursorInterface
+abstract class AbstractCursor implements
+    \IteratorAggregate,
+    ConfigCursorInterface
 {
     /**
      * @var ConfigCursorInterface
@@ -29,6 +31,20 @@ abstract class AbstractConfig implements ConfigCursorInterface
      * @var string
      */
     protected $key;
+
+    /**
+     * PHP can't handle the \Traversable interface not being implemented over
+     * an abstract class we therefore have no other choice to force one of the
+     * possible implementation choice
+     *
+     * For most people \IteratorAggregate is the easiest one
+     *
+     * @see IteratorAggregate::getIterator()
+     */
+    public function getIterator()
+    {
+        throw new \Exception("You must implement this method");
+    }
 
     /**
      * (non-PHPdoc)
@@ -118,5 +134,41 @@ abstract class AbstractConfig implements ConfigCursorInterface
         }
 
         return $this->parentCursor;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see ArrayAccess::offsetExists()
+     */
+    final public function offsetExists($offset)
+    {
+        return $this->has($path);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see ArrayAccess::offsetGet()
+     */
+    final public function offsetGet($offset)
+    {
+        return $this->get($offset);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see ArrayAccess::offsetSet()
+     */
+    final public function offsetSet($offset, $value)
+    {
+        return $this->set($offset, $value);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see ArrayAccess::offsetUnset()
+     */
+    final public function offsetUnset($offset)
+    {
+        return $this->delete($offset);
     }
 }

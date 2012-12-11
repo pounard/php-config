@@ -3,11 +3,15 @@
 namespace Config\Impl\Memory;
 
 use Config\ConfigHelper;
-use Config\Impl\AbstractConfig;
+use Config\Impl\AbstractCursor;
 use Config\Impl\DefaultSchema;
 use Config\InvalidPathException;
 
-class ArrayConfig extends AbstractConfig implements \IteratorAggregate
+/**
+ * Array config does not support list or hashmap value types, since it does
+ * everything schema less and typed dynamically
+ */
+class MemoryCursor extends AbstractCursor implements \IteratorAggregate
 {
     /**
      * Internal data.
@@ -23,8 +27,10 @@ class ArrayConfig extends AbstractConfig implements \IteratorAggregate
      */
     public function __construct(array &$data = null, $readonly = false)
     {
-        if (null !== $data) {
-          $this->data = $data;
+        if (null === $data) {
+            $this->data = array();
+        } else {
+            $this->data = &$data;
         }
 
         $this->readonly = $readonly;
@@ -54,13 +60,13 @@ class ArrayConfig extends AbstractConfig implements \IteratorAggregate
      */
     public function getCursor($path)
     {
-        $ret = $this->findPath($path);
+        $ret = &$this->findPath($path);
 
         if (!is_array($ret)) {
             throw new InvalidPathException("Expected a section, value found instead");
         }
 
-        return new ArrayConfig($ret, $this->readonly);
+        return new MemoryCursor($ret, $this->readonly);
     }
 
     /**
@@ -73,7 +79,7 @@ class ArrayConfig extends AbstractConfig implements \IteratorAggregate
 
         foreach ($this->data as $key => &$value) {
             if (is_array($value)) {
-                $sections[$key] = new ArrayConfig($value, $this->readonly);
+                $sections[$key] = new MemoryCursor($value, $this->readonly);
             }
         }
 
@@ -88,9 +94,9 @@ class ArrayConfig extends AbstractConfig implements \IteratorAggregate
     {
         $values = array();
 
-        foreach ($this->data as $key => &$value) {
+        foreach ($this->data as $key => $value) {
             if (!is_array($value)) {
-                $values[$key] = &$value;
+                $values[$key] = $value;
             }
         }
 
@@ -103,19 +109,7 @@ class ArrayConfig extends AbstractConfig implements \IteratorAggregate
      */
     public function has($path)
     {
-        // FIXME: Could be faster, using an exception for legit behavior is
-        // not performance wise.
-        try {
-            $this->findPath($path);
-
-            if (is_array($path)) {
-                return false;
-            }
-        } catch (InvalidPathException $e) {
-            return false;
-        }
-
-        return true;
+        return !is_array($this->findPath($path));
     }
 
     /**
@@ -126,13 +120,14 @@ class ArrayConfig extends AbstractConfig implements \IteratorAggregate
      *                              sections
      *
      * @return mixed                Reference to whatever is at the specified
-     *                              path
-     *
-     * @throws InvalidPathException In case of any error
+     *                              path, returns an empty array in case of any
+     *                              error
      */
     protected function &findPath($path, $create = false)
     {
-        ConfigHelper::isValidPath($path);
+        if (!ConfigHelper::isValidPath($path)) {
+            throw new InvalidPathException($path, ConfigHelper::getLastError());
+        }
 
         $parts   = explode('.', $path);
         $current = &$this->data;
@@ -140,14 +135,15 @@ class ArrayConfig extends AbstractConfig implements \IteratorAggregate
         while (!empty($parts)) {
             $key = array_shift($parts);
 
+            // Values can be null hence array_key_exists()
             if (!array_key_exists($key, $current)) {
-                if ($create) {
-                    $current[$key] = array();
-                } else {
-                    throw new InvalidPathException($path, sprintf("Expected a section for segment '%s', nothing found instead", $key));
+                $current[$key] = array();
+                if (!$create) {
+                    ConfigHelper::setLastError(sprintf("Expected a section for segment '%s', nothing found instead", $key));
                 }
             } elseif (!empty($parts) && !is_array($current[$key])) {
-                throw new InvalidPathException($path, sprintf("Expected a section for segment '%s', value found instead", $key));
+                ConfigHelper::setLastError(sprintf("Expected a section for segment '%s', value found instead", $key));
+                return array();
             }
 
             $current = &$current[$key];
@@ -162,25 +158,14 @@ class ArrayConfig extends AbstractConfig implements \IteratorAggregate
      */
     public function get($path, $default = null)
     {
-        if (isset($default)) {
-            // Enclose the exception handling into the if for pure performance
-            // we don't need the try/catch statement if we have not default.
-            // This is for purity matter, I'm not even sure this really change
-            // a thing.
-            try {
-                $ret = $this->findPath($path);
-            } catch (InvalidPathException $e) {
-                return $default;
-            }
-        } else {
-            $ret = $this->findPath($path);
-        }
+        $ret = &$this->findPath($path);
 
+        // Array is either an error, either a section, user asked for a value
         if (is_array($ret)) {
-            throw new InvalidPathException($path, "Expected a value, section found instead");
+            return $default;
+        } else {
+            return $ret;
         }
-
-        return $ret;
     }
 
     /**
@@ -189,9 +174,13 @@ class ArrayConfig extends AbstractConfig implements \IteratorAggregate
      */
     public function set($path, $value)
     {
+        if ($this->readonly) {
+            throw new \LogicException("This cursor is readonly");
+        }
+
         $ret = &$this->findPath($path, true);
 
-        if (is_array($ret)) {
+        if (is_array($ret) && !empty($ret)) {
             throw new InvalidPathException($path, "Excepted a value or nothing, section found instead");
         }
 
@@ -204,7 +193,13 @@ class ArrayConfig extends AbstractConfig implements \IteratorAggregate
      */
     public function delete($path)
     {
-        throw new \Exception("Not impletement yet");
+        if ($this->readonly) {
+            throw new \LogicException("This cursor is readonly");
+        }
+
+        if ($ret = &$this->findPath($path, true)) {
+            unset($path);
+        }
     }
 
     /**

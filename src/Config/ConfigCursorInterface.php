@@ -3,11 +3,16 @@
 namespace Config;
 
 /**
- * Defines any section or subsection of a configuration tree. This can be used
- * in order to introspect the registry. Traversable implementation will give
- * you all keys in the current instance, including sections
+ * Defines a node in the configuration registry
+ *
+ * An entry is a key/value pair
+ * A section or node is a sub tree
+ *
+ * Countable::count() will count the total number of children, entries included
+ * ArrayAccess interface will give you proxy methods to get, set and delete
+ * Traversable will iterate over all nodes and entries
  */
-interface ConfigCursorInterface extends \Countable, \Traversable
+interface ConfigCursorInterface extends \Countable, \ArrayAccess, \Traversable
 {
     /**
      * Tells if this instance is root
@@ -86,7 +91,7 @@ interface ConfigCursorInterface extends \Countable, \Traversable
     public function getValues();
 
     /**
-     * Does the specified path exists (value can be null or a section)
+     * Does the specified ebtry exists
      *
      * @param string $path          Relative path to check for existence
      * @return bool                 True if the value exists
@@ -106,11 +111,9 @@ interface ConfigCursorInterface extends \Countable, \Traversable
      *                              will still be raised. Null values cannot be
      *                              used as default
      *
-     * @return mixed                Whatever exists at the specified path
-     *
-     * @throws InvalidPathException If path does not exists or is incomplete
-     *                              (specified path is a section instead of a
-     *                              value)
+     * @return mixed                Whatever exists at the specified path per
+     *                              default this will never throw exception if
+     *                              path syntax is incorrect
      */
     public function get($path, $default = null);
 
