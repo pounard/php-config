@@ -2,11 +2,11 @@
 
 namespace Config\Impl\Memory;
 
-use Config\ConfigHelper;
 use Config\ConfigType;
+use Config\Error\InvalidPathException;
 use Config\Impl\AbstractCursor;
 use Config\Impl\DefaultSchema;
-use Config\InvalidPathException;
+use Config\PathHelper;
 
 /**
  * Array based implementation of config cursor
@@ -77,7 +77,10 @@ class MemoryCursor extends AbstractCursor implements \IteratorAggregate
             throw new InvalidPathException("Expected a section, value found instead");
         }
 
-        return new MemoryCursor($ret, $this->readonly);
+        $cursor = new MemoryCursor($ret, $this->readonly);
+        $cursor->setPath($path);
+
+        return $cursor;
     }
 
     /**
@@ -136,8 +139,8 @@ class MemoryCursor extends AbstractCursor implements \IteratorAggregate
      */
     protected function &findPath($path, $create = false)
     {
-        if (!ConfigHelper::isValidPath($path)) {
-            throw new InvalidPathException($path, ConfigHelper::getLastError());
+        if (!PathHelper::isValidPath($path)) {
+            throw new InvalidPathException($path, PathHelper::getLastError());
         }
 
         $parts   = explode('.', $path);
@@ -150,10 +153,10 @@ class MemoryCursor extends AbstractCursor implements \IteratorAggregate
             if (!array_key_exists($key, $current)) {
                 $current[$key] = array();
                 if (!$create) {
-                    ConfigHelper::setLastError(sprintf("Expected a section for segment '%s', nothing found instead", $key));
+                    PathHelper::setLastError(sprintf("Expected a section for segment '%s', nothing found instead", $key));
                 }
             } elseif (!empty($parts) && !is_array($current[$key])) {
-                ConfigHelper::setLastError(sprintf("Expected a section for segment '%s', value found instead", $key));
+                PathHelper::setLastError(sprintf("Expected a section for segment '%s', value found instead", $key));
                 return array();
             }
 
@@ -209,17 +212,6 @@ class MemoryCursor extends AbstractCursor implements \IteratorAggregate
         if ($ret = &$this->findPath($path, true)) {
             unset($path);
         }
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see \Config\ConfigCursorInterface::getSchema()
-     */
-    public function getSchema($path)
-    {
-        $value = $this->get($path);
-
-        return new DefaultSchema(ConfigType::getType($value));
     }
 
     /**

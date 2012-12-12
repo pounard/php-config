@@ -2,8 +2,14 @@
 
 namespace Config\Impl;
 
+use Config\ConfigBackendInterface;
 use Config\ConfigCursorInterface;
-use Config\ParentNotFoundException;
+use Config\ConfigType;
+use Config\Error\ParentNotFoundException;
+use Config\PathHelper;
+use Config\Schema\DefaultEntrySchema;
+use Config\Schema\NullSchema;
+use Config\Schema\SchemaInterface;
 
 /**
  * Base implementation that would fit most needs
@@ -12,11 +18,6 @@ abstract class AbstractCursor implements
     \IteratorAggregate,
     ConfigCursorInterface
 {
-    /**
-     * @var ConfigCursorInterface
-     */
-    protected $parentCursor;
-
     /**
      * @var bool
      */
@@ -31,6 +32,11 @@ abstract class AbstractCursor implements
      * @var string
      */
     protected $key;
+
+    /**
+     * @var SchemaInterface
+     */
+    private $schema;
 
     /**
      * PHP can't handle the \Traversable interface not being implemented over
@@ -109,31 +115,46 @@ abstract class AbstractCursor implements
     }
 
     /**
-     * There is great chances that parent instance actually share the same
-     * code base, so this functions won't be protected for it
-     *
-     * @param ConfigCursorInterface $parent Parent cursor
+     * (non-PHPdoc)
+     * @see \Config\ConfigCursorInterface::getSchema()
      */
-    protected function setParentCursor(ConfigCursorInterface $parentCursor)
+    final public function getEntrySchema($path)
     {
-        $this->parentCursor = $parentCursor;
+        $schema  = $this->getSchema();
+        $relPath = $path;
+
+        if (!$this->isRoot()) {
+            $path = PathHelper::join($this->getPath(), $relPath);
+        }
+
+        if ($schema instanceof NullSchema) {
+            // Attempt dynamic resolve
+            return new DefaultEntrySchema(ConfigType::getType($this->get($relPath)));
+        } else {
+            return $schema->getEntrySchema($path);
+        }
     }
 
     /**
      * (non-PHPdoc)
-     * @see \Config\ConfigCursorInterface::getParentCursor()
+     * @see \Config\Schema\SchemaAwareInterface::setSchema()
      */
-    public function getParentCursor()
+    final public function setSchema(SchemaInterface $schema)
     {
-        if (!isset($this->parent)) {
-            if ($this->isRoot()) {
-                throw new ParentNotFoundException("Current config instance is root");
-            } else {
-                throw new ParentNotFoundException("Current config instance is orphaned");
-            }
+        $this->schema = $schema;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Config\Schema\SchemaAwareInterface::getSchema()
+     */
+    final public function getSchema()
+    {
+        if (null === $this->schema) {
+            $this->schema = new NullSchema();
         }
 
-        return $this->parentCursor;
+        return $this->schema;
     }
 
     /**

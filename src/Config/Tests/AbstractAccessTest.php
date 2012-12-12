@@ -3,7 +3,7 @@
 namespace Config\Tests;
 
 use Config\ConfigBackendInterface;
-use Config\InvalidPathException;
+use Config\Error\InvalidPathException;
 
 abstract class AbstractAccessTest extends \PHPUnit_Framework_TestCase
 {

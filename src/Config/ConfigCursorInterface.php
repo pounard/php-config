@@ -2,17 +2,28 @@
 
 namespace Config;
 
+use Config\Error\InvalidPathException;
+use Config\Schema\SchemaAwareInterface;
+use Config\Schema\EntrySchemaInterface;
+
 /**
  * Defines a node in the configuration registry
  *
  * An entry is a key/value pair
- * A section or node is a sub tree
+ * A section is a subtree containing entries and sections
  *
- * Countable::count() will count the total number of children, entries included
- * ArrayAccess interface will give you proxy methods to get, set and delete
- * Traversable will iterate over all nodes and entries
+ * Countable will count the total number of children, entries included
+ *
+ * ArrayAccess interface will give you sugar candy aliases for get(), set(),
+ * delete() and has() methods
+ *
+ * Traversable will iterate over all of sections and entries
  */
-interface ConfigCursorInterface extends \Countable, \ArrayAccess, \Traversable
+interface ConfigCursorInterface extends
+    \Countable,
+    \ArrayAccess,
+    \Traversable,
+    SchemaAwareInterface
 {
     /**
      * Tells if this instance is root
@@ -51,15 +62,6 @@ interface ConfigCursorInterface extends \Countable, \ArrayAccess, \Traversable
      * @return string Can be null if instance is orphaned or root
      */
     public function getKey();
-
-    /**
-     * Get parrent cursor if not root
-     *
-     * @return ConfigCursorInterface Parent cursor
-     *
-     * @throws ConfigExecption       If current instance is root or is orphaned
-     */
-    public function getParentCursor();
 
     /**
      * Get cursor for specified subpath
@@ -129,16 +131,16 @@ interface ConfigCursorInterface extends \Countable, \ArrayAccess, \Traversable
     public function delete($path);
 
     /**
-     * Get schema for the given path
+     * Get single entry schema for the given path
      *
      * @param string $path           Path for which to get the schema, must be
      *                               an entry
      *
-     * @return ConfigSchemaInterface Schema instance
+     * @return EntrySchemaInterface Schema instance
      *
      * @throws InvalidPathException  If path does not exists or is not an entry
      */
-    public function getSchema($path);
+    public function getEntrySchema($path);
 
     /**
      * Self introspect full configuration from this cursor and return it as a

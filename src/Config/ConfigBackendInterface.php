@@ -2,19 +2,15 @@
 
 namespace Config;
 
+use Config\Schema\SchemaAwareInterface;
+
 /**
- * Configuration reader. Configuration options are materialized by strings
- * that can contain one or more dot inside defining a path inside the
- * configuration tree.
+ * Configuration backend, this is no more than a cursor but which is root
  *
- * Valid path examples:
- *   - debug
- *   - debug.enabled
- *   - site.name
- *
- * Invalid path examples:
- *   - .debug
- *   - debug.
+ * About configuration names: name can only contain lowercase letters, numbers
+ * and '-'
+ * About configuration path: a path is the join between one or more names using
+ * the dot separator
  */
 interface ConfigBackendInterface extends ConfigCursorInterface
 {
