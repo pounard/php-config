@@ -8,6 +8,20 @@ namespace Config\Schema;
 interface EntrySchemaInterface
 {
     /**
+     * Get schema identifier this entry comes from
+     *
+     * @return string Schema identifier
+     */
+    public function getSchemaId();
+
+    /**
+     * Get entry path
+     *
+     * @return string Entry path
+     */
+    public function getPath();
+
+    /**
      * Get the entry type
      *
      * @return int One of the ConfigType::* constants

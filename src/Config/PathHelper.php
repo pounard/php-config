@@ -83,7 +83,7 @@ final class PathHelper
     }
 
     /**
-     * Join on or more path
+     * Join one or more path together
      *
      * @param ...     String path list
      *

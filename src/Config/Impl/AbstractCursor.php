@@ -122,17 +122,19 @@ abstract class AbstractCursor implements
     {
         $schema  = $this->getSchema();
         $relPath = $path;
+        $entry   = null;
 
         if (!$this->isRoot()) {
             $path = PathHelper::join($this->getPath(), $relPath);
         }
 
-        if ($schema instanceof NullSchema) {
-            // Attempt dynamic resolve
-            return new DefaultEntrySchema(ConfigType::getType($this->get($relPath)));
+        if (!$schema instanceof NullSchema) {
+            $entry = $schema->getEntrySchema($path);
         } else {
-            return $schema->getEntrySchema($path);
+            $entry = new DefaultEntrySchema($path, 'none', ConfigType::getType($this->get($relPath)));
         }
+
+        return $entry;
     }
 
     /**

@@ -9,6 +9,10 @@ use Config\ConfigType;
  */
 class DefaultEntrySchema implements EntrySchemaInterface
 {
+    protected $schemaId;
+
+    protected $path;
+
     protected $type;
 
     protected $listType;
@@ -25,6 +29,8 @@ class DefaultEntrySchema implements EntrySchemaInterface
      * Default constructor
      */
     public function __construct(
+        $path,
+        $schemaId,
         $type         = ConfigType::MIXED,
         $listType     = null,
         $shortDesc    = null,
@@ -32,12 +38,32 @@ class DefaultEntrySchema implements EntrySchemaInterface
         $locale       = null,
         $defaultValue = null)
     {
+        $this->path         = $path;
+        $this->schemaId     = $schemaId;
         $this->type         = $type;
         $this->listType     = $listType;
         $this->shortDesc    = $shortDesc;
         $this->longDesc     = $longDesc;
         $this->locale       = $locale;
         $this->defaultValue = $defaultValue;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Config\Schema\EntrySchemaInterface::getSchemaId()
+     */
+    public function getSchemaId()
+    {
+        return $this->schemaId;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Config\Schema\EntrySchemaInterface::getPath()
+     */
+    public function getPath()
+    {
+        return $this->path;
     }
 
     /**
