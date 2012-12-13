@@ -2,12 +2,14 @@
 
 namespace Config;
 
+use Config\Error\InvalidPathException;
+
 final class PathHelper
 {
     /**
      * Path separator
      */
-    const PATH_SEPARATOR = './';
+    const PATH_SEPARATOR = '.';
 
     /**
      * Pure performance helper.
@@ -79,6 +81,28 @@ final class PathHelper
             return false;
         } else {
             return true;
+        }
+    }
+
+    /**
+     * Get last path segment
+     *
+     * @param string $path Path
+     *
+     * @return string      Last path segment
+     *
+     * @throws InvalidPathException If path is invalid
+     */
+    public static function getLastSegment($path)
+    {
+        if (!self::isValidPath($path)) {
+            throw new InvalidPathException($path, self::getLastError());
+        }
+
+        if (false !== ($pos = strrpos($path, self::PATH_SEPARATOR))) {
+            return substr($path, $pos + 1);
+        } else {
+            return $path;
         }
     }
 

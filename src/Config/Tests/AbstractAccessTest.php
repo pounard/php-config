@@ -56,7 +56,9 @@ abstract class AbstractAccessTest extends \PHPUnit_Framework_TestCase
         foreach ($invalidPathList as $path) {
             try {
                 $cursor->get($path);
-                $this->fail("The path was invalid and should have raised an exception");
+                $this->fail(sprintf(
+                    "The path %s was invalid and should have raised an exception",
+                    $path));
             } catch (InvalidPathException $e) {
                 $this->assertTrue(true, "Got an exception on invalid path");
             }

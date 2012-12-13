@@ -22,7 +22,7 @@ use Config\PathHelper;
  * @endcode
  * Disregarding the original interface documentation 
  */
-class MemoryCursor extends AbstractCursor implements \IteratorAggregate
+class MemoryCursor extends AbstractMemoryCursor implements \IteratorAggregate
 {
     /**
      * Internal data.
