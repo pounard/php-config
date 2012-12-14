@@ -24,13 +24,21 @@ final class NullSchema implements \IteratorAggregate, SchemaInterface
     }
 
     /**
-     * Get schema information for a single entry
-     *
-     * @param string $path Entry path
+     * (non-PHPdoc)
+     * @see \Config\Schema\SchemaInterface::getEntrySchema()
      */
     public function getEntrySchema($path)
     {
         return $this->defaultEntry;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Config\Schema\SchemaInterface::exists()
+     */
+    public function exists($path)
+    {
+        return false;
     }
 
     /**

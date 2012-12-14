@@ -39,7 +39,14 @@ interface WritableSchemaInterface extends SchemaInterface
     /**
      * Remove all keys from the given schema identifier
      *
+     * @param string|array Single path or an array of path
+     */
+    public function remove($path);
+
+    /**
+     * Remove all keys from the given schema identifier
+     *
      * @param string Schema identifier
      */
-    public function remove($schemaId);
+    public function unmerge($schemaId);
 }

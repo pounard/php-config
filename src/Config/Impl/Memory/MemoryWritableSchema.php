@@ -1,21 +1,34 @@
 <?php
 
-namespace Config\Impl;
+namespace Config\Impl\Memory;
 
 use Config\PathHelper;
 use Config\Schema\DefaultEntrySchema;
+use Config\Schema\SchemaInterface;
 use Config\Schema\WritableSchemaInterface;
 
 /**
  * This implementation is intented to use for unit testing only, please do not
  * use on a production site
  */
-class MemoryWritableSchema implements WritableSchemaInterface
+class MemoryWritableSchema implements
+    \IteratorAggregate,
+    WritableSchemaInterface
 {
     /**
      * @var SchemaEntryInterface[]
      */
     protected $map = array();
+
+    /**
+     * Default constructor
+     */
+    public function __construct(array $map = null)
+    {
+        if (null !== $map) {
+            $this->map = $map;
+        }
+    }
 
     /**
      * (non-PHPdoc)
@@ -28,6 +41,33 @@ class MemoryWritableSchema implements WritableSchemaInterface
         } else {
             return new DefaultEntrySchema($path, 'none');
         }
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Config\Schema\SchemaInterface::exists()
+     */
+    public function exists($path)
+    {
+        return isset($this->map[$path]);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see IteratorAggregate::getIterator()
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->map);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see Countable::count()
+     */
+    public function count()
+    {
+        return count($this->map);
     }
 
     /**
@@ -47,15 +87,25 @@ class MemoryWritableSchema implements WritableSchemaInterface
     {
         foreach ($schema as $entry) {
             if (null === $path) {
-                $this->map[$path] = clone $entry;
+                $realpath = $entry->getPath();
             } else {
-                $this->map[$path] = new DefaultEntrySchema(
-                    PathHelper::join($path, $entry->getPath()),
+                $realpath = PathHelper::join($path, $entry->getPath());
+            }
+
+            if (!$overwrite && isset($this->map[$realpath])) {
+                continue;
+            }
+
+            if ($realpath === $path) {
+                $this->map[$realpath] = clone $entry;
+            } else {
+                $this->map[$realpath] = new DefaultEntrySchema(
+                    $realpath,
                     $entry->getSchemaId(),
                     $entry->getType(),
                     $entry->getListType(),
                     $entry->getShortDescription(),
-                    $entry->getDescription(),
+                    $entry->getLongDescription(),
                     $entry->getLocale(),
                     $entry->getDefaultValue());
             }
@@ -66,7 +116,20 @@ class MemoryWritableSchema implements WritableSchemaInterface
      * (non-PHPdoc)
      * @see \Config\Schema\WritableSchemaInterface::remove()
      */
-    public function remove($schemaId)
+    public function remove($path)
+    {
+        if (!is_array($path)) {
+            $path = array($path);
+        }
+
+        $this->map = array_diff_key($this->map, array_flip($path));
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Config\Schema\WritableSchemaInterface::remove()
+     */
+    public function unmerge($schemaId)
     {
         foreach ($this->map as $path => $entry) {
             if ($schemaId === $entry->getSchemaId()) {
