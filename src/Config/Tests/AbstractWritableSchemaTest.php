@@ -156,5 +156,30 @@ abstract class AbstractWritableSchemaTest extends \PHPUnit_Framework_TestCase
     public function testRelocate()
     {
         $schema = $this->schema;
+
+        $sampleEntry = new DefaultEntrySchema(
+            'test',
+            'schema1',
+            ConfigType::INT,
+            null,
+            "Short test",
+            "Long test",
+            'fr_FR',
+            42
+        );
+
+        $sampleSchema = new MemoryWritableSchema(array('test1' => $sampleEntry));
+
+        $this->assertFalse($schema->exists('a.b.c.test'));
+        $this->assertFalse($schema->exists('a.b.d.test'));
+        $this->assertFalse($schema->exists('foo.bar.test'));
+
+        $schema->relocate('a.b.c', $sampleSchema);
+        $schema->relocate('a.b.d', $sampleSchema);
+        $schema->relocate('foo.bar', $sampleSchema);
+
+        $this->assertTrue($schema->exists('a.b.c.test'));
+        $this->assertTrue($schema->exists('a.b.d.test'));
+        $this->assertTrue($schema->exists('foo.bar.test'));
     }
 }

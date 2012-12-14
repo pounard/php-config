@@ -34,7 +34,7 @@ interface WritableSchemaInterface extends SchemaInterface
      *                                will be overwritten, can be used for
      *                                updates
      */
-    public function rellocate($path, SchemaInterface $schema, $overwrite = true);
+    public function relocate($path, SchemaInterface $schema, $overwrite = true);
 
     /**
      * Remove all keys from the given schema identifier

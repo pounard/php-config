@@ -76,14 +76,14 @@ class MemoryWritableSchema implements
      */
     public function merge(SchemaInterface $schema, $overwrite = true)
     {
-        return $this->rellocate(null, $schema, $overwrite);
+        return $this->relocate(null, $schema, $overwrite);
     }
 
     /**
      * (non-PHPdoc)
      * @see \Config\Schema\WritableSchemaInterface::rellocate()
      */
-    public function rellocate($path, SchemaInterface $schema, $overwrite = true)
+    public function relocate($path, SchemaInterface $schema, $overwrite = true)
     {
         foreach ($schema as $entry) {
             if (null === $path) {
