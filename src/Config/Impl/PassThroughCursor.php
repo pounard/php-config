@@ -18,8 +18,7 @@ use Config\PathHelper;
  */
 final class PassThroughCursor extends AbstractSchemaAware implements
     \IteratorAggregate,
-    ConfigCursorInterface,
-    \Countable
+    ConfigCursorInterface
 {
     /**
      * @var ConfigBackendInterface
