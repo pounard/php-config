@@ -5,6 +5,7 @@ namespace Config\Impl\Stored;
 use Config\ConfigBackendInterface;
 use Config\Impl\AbstractCursor;
 use Config\Impl\PassThroughCursor;
+use Config\Schema\SchemaInterface;
 use Config\Storage\StorageInterface;
 
 /**
@@ -42,13 +43,19 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
      * Default constructor
      *
      * @param StorageInterface $storage Storage backend
+     * @param SchemaInterface $schema   Schema browser
      * @param string $rootPath          Root path within the storage if any
      */
     public function __construct(
         StorageInterface $storage,
+        SchemaInterface $storage = null,
         $rootPath = null)
     {
         $this->storage = $storage;
+
+        if (null !== $schema) {
+            $this->setSchema($schema);
+        }
     }
 
     /**
