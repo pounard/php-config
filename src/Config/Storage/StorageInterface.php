@@ -83,12 +83,12 @@ interface StorageInterface
      * Write a single value
      *
      * @param string $path Path
-     * @param int $type    ConfigType constant
      * @param mixed $value Value
+     * @param int $type    ConfigType constant
      * @param string $safe If set to false unsafe or asynchronous operations
      *                     are allowed and key might now written
      */
-    public function write($path, $type, $value, $safe = true);
+    public function write($path, $value, $type = ConfigType::MIXED, $safe = true);
 
     /**
      * Delete one or more entries

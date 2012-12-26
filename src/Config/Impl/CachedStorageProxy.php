@@ -2,6 +2,7 @@
 
 namespace Config\Impl;
 
+use Config\ConfigType;
 use Config\Storage\StorageInterface;
 
 /**
@@ -97,11 +98,11 @@ class CachedStorageProxy implements StorageInterface
     {
         if ($this->modified) {
 
-            call_user_func($this->setCallback(array(
+            call_user_func($this->setCallback, array(
                 $this->data,
-                $this->exists;
+                $this->exists,
                 $this->types,
-            )));
+            ));
 
             $this->modified = false;
         }
@@ -112,7 +113,7 @@ class CachedStorageProxy implements StorageInterface
      */
     private function ensureCache()
     {
-        if (null === $data) {
+        if (null === $this->data) {
 
             $ret = call_user_func($this->getCallback);
 
@@ -258,10 +259,10 @@ class CachedStorageProxy implements StorageInterface
      * (non-PHPdoc)
      * @see \Config\Storage\StorageInterface::write()
      */
-    public function write($path, $type, $value, $safe = true)
+    public function write($path, $value, $type = ConfigType::MIXED, $safe = true)
     {
         $this->modified = true;
-        $this->storage->write($path, $type, $safe);
+        $this->storage->write($path, $value, $type, $safe);
 
         if ($safe) {
             $this->status = $this->storage->getLastStatus();

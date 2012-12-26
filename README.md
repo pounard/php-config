@@ -1,12 +1,16 @@
-Yet another PHP Config API
-==========================
+Schema based configuration registry
+===================================
 
-PHP registry-like configuration interface. Basically it provides all the needed
-tools to manage your configuration as a single registry tree, starting from a
-root, managing schema defined configuration entries and sub trees.
+This API provides configuration settings management for PHP applications.
 
-This was originally inspired by GConf, even if today it's still very far from
-being as complete.
+It provides two components:
+
+ * Interfaces for reading and writing configuration in very simple and
+   efficient manner.
+
+ * An API for reading and browsing the configuration schema, allowing to
+   manage your configuration in the same way as a complex value tree.
+
 
 Basic usage
 -----------
