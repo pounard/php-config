@@ -32,6 +32,10 @@ Getting started
 Cursor basic usage
 ------------------
 
+The following example will show you how to set and get values from a
+configuration cursor. Note that a configuration backend is nothing more than
+a cursor which is considered as being the root of the configuration tree.
+
     // You have to start with something
     $config = new MemoryBackend(
         parse_ini_file("config.ini", true));
@@ -67,6 +71,10 @@ Cursor basic usage
 Instanciating a full configuration stack
 ----------------------------------------
 
+If you are building a complex application that needs a full stack configuration
+API, including configuration keys typing and introspection abilities, follow
+the next example.
+
     // Create your schema and storage instances, could be anything
     // else including your own implementation
     $schema = new MemoryWritableSchema();
@@ -89,6 +97,27 @@ Instanciating a full configuration stack
     $root = '/my/application';
 
     $cursor = new StoredBackend($storage, $schema, $root);
+
+From this point, the __$cursor__ variable is read to be used. As explained
+upper, this cursor is also the __backend__. You can from this point store a
+pointer to the $cursor backend anywhere, as in example a dependency injection
+container, and use it in your application.
+
+Consider this example (using a Symfony DIC interface):
+
+    $container->set('config', $cursor);
+
+    // Later, considering we're now in a specific ContainerAware object
+    // context
+    $config = $this->getContainer()->get('config');
+
+    // If you want to read configuration
+    $value = $config['/some/path'];
+
+    // If you want to introspect schema
+    $schema = $config->getSchema();
+
+The cursor is a single point of entry for the full API.
 
 Basic configuration stack usage
 -------------------------------
