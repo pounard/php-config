@@ -8,12 +8,29 @@ It provides two components:
  * Interfaces for reading and writing configuration in very simple and
    efficient manner.
 
- * An API for reading and browsing the configuration schema, allowing to
-   manage your configuration in the same way as a complex value tree.
+ * A full API for reading and browsing the configuration schema, allowing to
+   manage your configuration in the same way as the Windows registry or the
+   GSettings API.
 
+It also gives:
 
-Basic usage
------------
+ * A very simple interface for writing storage backend easily.
+
+ * A less but still very simple interface for writing your schema browser
+   implementation easily.
+
+ * A fully working configuration cursor implementation that uses any storage
+   backend and any schema browser backend.
+
+ * A fully working storage backend proxy that chaches read keys that needs
+   to simple callables: a cache setter and a cache getter for working,
+   allowing you to easily add a cache layer for configuration.
+
+Getting started
+===============
+
+Cursor basic usage
+------------------
 
     // You have to start with something
     $config = new MemoryBackend(
@@ -47,8 +64,39 @@ Basic usage
     echo $entrySchema->getShortDescription(), "\n",
          $entrySchema->getType(), "\n";
 
+Instanciating a full configuration stack
+----------------------------------------
+
+    // Create your schema and storage instances, could be anything
+    // else including your own implementation
+    $schema = new MemoryWritableSchema();
+    $storage = new MemoryStorage();
+    $root = null;
+
+    // Optional set, we could use a caching proxy
+    $cacheId = $__SERVER['REQUEST_URI'];
+    $storage = new CacheStorageProxy(
+        $storage,
+        function () use ($cacheId) {
+            return apc_fetch($cacheId);
+        },
+        function ($data) use ($cacheId {
+            apc_store($cacheId, $data);
+        });
+
+    // Optionnaly, we could consider share the storage backend with
+    // multiple applications, case in which we need to namespace them
+    $root = '/my/application';
+
+    $cursor = new StoredBackend($storage, $schema, $root);
+
+Basic configuration stack usage
+-------------------------------
+
+@todo
+
 History
--------
+=======
 
 Just commiting this code somewhere I can keep it.
 
