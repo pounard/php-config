@@ -1,10 +1,8 @@
 <?php
 
-namespace Config\Impl\Stored;
+namespace Config\Impl;
 
 use Config\ConfigBackendInterface;
-use Config\Impl\AbstractCursor;
-use Config\Impl\PassThroughCursor;
 use Config\Schema\SchemaInterface;
 use Config\Storage\StorageInterface;
 
@@ -48,7 +46,7 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
      */
     public function __construct(
         StorageInterface $storage,
-        SchemaInterface $storage = null,
+        SchemaInterface $schema = null,
         $rootPath = null)
     {
         $this->storage = $storage;

@@ -55,6 +55,21 @@ abstract class AbstractCursor extends AbstractSchemaAware implements
 
     /**
      * (non-PHPdoc)
+     * @see Countable::count()
+     */
+    public function count()
+    {
+        $iterator = $this->getIterator();
+
+        if ($iterator instanceof \Countable) {
+            return $iterator->count();
+        } else {
+            throw new \Exception("You must implement this method");
+        }
+    }
+
+    /**
+     * (non-PHPdoc)
      * @see ArrayAccess::offsetExists()
      */
     final public function offsetExists($offset)
