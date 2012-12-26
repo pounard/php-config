@@ -22,9 +22,9 @@ It also gives:
  * A fully working configuration cursor implementation that uses any storage
    backend and any schema browser backend.
 
- * A fully working storage backend proxy that chaches read keys that needs
-   to simple callables: a cache setter and a cache getter for working,
-   allowing you to easily add a cache layer for configuration.
+ * A fully working storage backend proxy that caches read keys based upon
+   two simple callables: a cache setter and a cache getter for working;
+   Allowing you to easily add a cache layer for configuration.
 
 Getting started
 ===============
