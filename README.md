@@ -90,16 +90,6 @@ And the following sample code:
     // Works with relative path, this echoes 42
     echo $cursor['c'];
 
-    // You can introspect easily
-    foreach ($cursor as $key => $entry) {
-        if ($entry instanceof ConfigCursorInterface) {
-            // This is a cursor, do whatever you want to do with it
-        } else {
-            // This is a single value
-            echo $key, " is ", $value;
-        }
-    }
-
 Instanciating a full configuration stack
 ----------------------------------------
 

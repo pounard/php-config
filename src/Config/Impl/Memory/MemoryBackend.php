@@ -186,10 +186,6 @@ class MemoryBackend extends AbstractCursor implements ConfigBackendInterface
      */
     public function set($path, $value)
     {
-        if ($this->readonly) {
-            throw new \LogicException("This cursor is readonly");
-        }
-
         $ret = &$this->findPath($path, true);
 
         if (is_array($ret) && !empty($ret)) {
@@ -205,10 +201,6 @@ class MemoryBackend extends AbstractCursor implements ConfigBackendInterface
      */
     public function delete($path)
     {
-        if ($this->readonly) {
-            throw new \LogicException("This cursor is readonly");
-        }
-
         if ($ret = &$this->findPath($path, true)) {
             unset($path);
         }
