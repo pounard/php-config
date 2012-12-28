@@ -27,30 +27,7 @@ abstract class AbstractCursor extends AbstractSchemaAware implements
      */
     public function getIterator()
     {
-        throw new \Exception("You must implement this method");
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see \Config\ConfigCursorInterface::getSchema()
-     */
-    final public function getEntrySchema($path)
-    {
-        $schema  = $this->getSchema();
-        $relPath = $path;
-        $entry   = null;
-
-        if (!$this->isRoot()) {
-            $path = Path::join($this->getPath(), $relPath);
-        }
-
-        if (!$schema instanceof NullSchema) {
-            $entry = $schema->getEntrySchema($path);
-        } else {
-            $entry = new DefaultEntrySchema($path, 'none', ConfigType::getType($this->get($relPath)));
-        }
-
-        return $entry;
+        throw new \Exception("You must implement the getIterator() method");
     }
 
     /**
@@ -64,7 +41,7 @@ abstract class AbstractCursor extends AbstractSchemaAware implements
         if ($iterator instanceof \Countable) {
             return $iterator->count();
         } else {
-            throw new \Exception("You must implement this method");
+            throw new \Exception("You must implement the count() method");
         }
     }
 

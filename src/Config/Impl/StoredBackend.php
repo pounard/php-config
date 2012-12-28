@@ -3,6 +3,7 @@
 namespace Config\Impl;
 
 use Config\ConfigBackendInterface;
+use Config\ConfigType;
 use Config\Schema\SchemaInterface;
 use Config\Storage\StorageInterface;
 
@@ -29,6 +30,12 @@ use Config\Storage\StorageInterface;
  * the backend and schema can be together, it is also unadvised to use cursors
  * for any other thing than pure administrative introspection, since they will
  * only act as a proxy toward this instance.
+ *
+ * This instance can be strict or less strict. If the strict mode is enabled,
+ * strict checks will be done at both read and write time, if strict mode is
+ * disabled, only the write operations will be strict checked. In case no
+ * schema is set, this instance will never do strict operations and will
+ * always store values as blobs (which is bad)
  */
 class StoredBackend extends AbstractCursor implements ConfigBackendInterface
 {
@@ -38,22 +45,87 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
     private $storage;
 
     /**
+     * @var bool
+     */
+    private $strict = false;
+
+    /**
+     * @var bool
+     */
+    private $safe = true;
+
+    /**
      * Default constructor
      *
      * @param StorageInterface $storage Storage backend
-     * @param SchemaInterface $schema   Schema browser
+     * @param SchemaInterface $schema   Schema browser, if given this instance
+     *                                  will do strict checks upon the schema
+     *                                  at both read and write time on the
      * @param string $rootPath          Root path within the storage if any
+     * @param bool $strict              If set to false, strict mode will not
+     *                                  be enabled even if a schema is given
+     * @param bool $safe                If set to false unsafe operations will
+     *                                  be allowed with the storage
      */
     public function __construct(
         StorageInterface $storage,
         SchemaInterface $schema = null,
-        $rootPath = null)
+        $rootPath               = null,
+        $strict                 = true,
+        $safe                   = true)
     {
         $this->storage = $storage;
+        $this->safe = (bool)$safe;
 
         if (null !== $schema) {
             $this->setSchema($schema);
+            $this->strict = (bool)$strict;
         }
+    }
+
+    /**
+     * Tell if strict mode is enabled
+     *
+     * @return bool True if strict mode is enabled
+     */
+    public function isStrict()
+    {
+        return $this->strict;
+    }
+
+    /**
+     * Set strict mode
+     *
+     * @param bool $strict True for enabling strict mode, false for disabling
+     */
+    public function setStrict($strict)
+    {
+        if ($this->hasSchema()) {
+            $this->strict = (bool)$strict;
+        } else if ($strict) {
+            throw new \LogicException(
+                "Cannot set strict mode when no schema is set");
+        }
+    }
+
+    /**
+     * Tell if safe mode is enabled
+     *
+     * @return bool True if write operations are safe
+     */
+    public function isSafe()
+    {
+        return $this->safe;
+    }
+
+    /**
+     * Set safe mode
+     *
+     * @param bool $safe False for disabling the safe mode
+     */
+    public function setSafe($safe)
+    {
+        $this->safe = (bool)$safe;
     }
 
     /**
@@ -111,31 +183,6 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
     }
 
     /**
-     * Return an iterator of sections under this cursor
-     *
-     * @return \Traversable Values given by this iterator will be a set of
-     *                      ConfigCursorInterface instances, keys will be local
-     *                      section names. It can be empty
-     */
-    public function getSections()
-    {
-        // Must rely on schema
-        throw new \Exception("Not implemented yet");
-    }
-
-    /**
-     * Return an iterator of values under this cursor
-     *
-     * @return \Traversable Values given by this iterator will be scalar values
-     *                      or list of scalar values. It can be empty
-     */
-    public function getValues()
-    {
-        // Must rely on schema
-        throw new \Exception("Not implemented yet");
-    }
-
-    /**
      * (non-PHPdoc)
      * @see \Config\ConfigCursorInterface::has()
      */
@@ -145,38 +192,34 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
     }
 
     /**
-     * Get a single entry value
-     *
-     * @param string $path          Path for which to get data
-     *
-     * @return mixed                Whatever exists at the specified path per
-     *                              default this will never throw exception if
-     *                              path syntax is incorrect
+     * (non-PHPdoc)
+     * @see \Config\ConfigCursorInterface::get()
      */
     public function get($path)
     {
-        // Must rely on schema
-        throw new \Exception("Not implemented yet");
+        if ($this->strict) {
+            $entry = $this->getSchema()->getEntrySchema($path);
+
+            return $this->storage->read($path, $entry->getType());
+        } else {
+            return $this->storage->read($path, ConfigType::MIXED);
+        }
     }
 
     /**
-     * Set value at specified path or key
-     *
-     * @param string $path Path in which to set the value
-     * @param mixed $value Single value
+     * (non-PHPdoc)
+     * @see \Config\ConfigCursorInterface::set()
      */
     public function set($path, $value)
     {
-        // Must rely on schema
-        throw new \Exception("Not implemented yet");
+        $entry = $this->getSchema()->getEntrySchema($path);
+
+        $this->storage->write($path, $value, $entry->getType(), $this->safe);
     }
 
     /**
-     * Delete entry
-     *
-     * @param string $path Path
-     *
-     * @throws InvalidPathException If path does not exist or is not an entry
+     * (non-PHPdoc)
+     * @see \Config\ConfigCursorInterface::delete()
      */
     public function delete($path)
     {

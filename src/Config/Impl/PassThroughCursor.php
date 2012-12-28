@@ -124,29 +124,6 @@ final class PassThroughCursor extends AbstractSchemaAware implements
     }
 
     /**
-     * Return an iterator of sections under this cursor
-     *
-     * @return \Traversable Values given by this iterator will be a set of
-     *                      ConfigCursorInterface instances, keys will be local
-     *                      section names. It can be empty
-     */
-    public function getSections()
-    {
-        throw new \Exception("Not implemented yet");
-    }
-
-    /**
-     * Return an iterator of values under this cursor
-     *
-     * @return \Traversable Values given by this iterator will be scalar values
-     *                      or list of scalar values. It can be empty
-     */
-    public function getValues()
-    {
-        throw new \Exception("Not implemented yet");
-    }
-
-    /**
      * (non-PHPdoc)
      * @see \Config\ConfigCursorInterface::has()
      */
@@ -180,15 +157,6 @@ final class PassThroughCursor extends AbstractSchemaAware implements
     public function delete($path)
     {
         return $this->backend->delete(Path::join($this->path, $path));
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see \Config\ConfigCursorInterface::getEntrySchema()
-     */
-    public function getEntrySchema($path)
-    {
-        return $this->backend->getEntrySchema(Path::join($this->path, $path));
     }
 
     /**

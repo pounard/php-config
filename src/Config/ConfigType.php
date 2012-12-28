@@ -13,6 +13,11 @@ final class ConfigType
     const MIXED = -1;
 
     /**
+     * Current path is a cursor containing entries
+     */
+    const CURSOR = 0;
+
+    /**
      * Type is boolean
      */
     const BOOLEAN = 1;

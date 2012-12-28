@@ -130,40 +130,6 @@ class MemoryBackend extends AbstractCursor implements ConfigBackendInterface
 
     /**
      * (non-PHPdoc)
-     * @see \Config\ConfigCursorInterface::getSections()
-     */
-    public function getSections()
-    {
-        $sections = array();
-
-        foreach ($this->data as $key => &$value) {
-            if (is_array($value)) {
-                $sections[$key] = new PassThroughCursor($value, $key);
-            }
-        }
-
-        return $sections;
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see \Config\ConfigCursorInterface::getValues()
-     */
-    public function getValues()
-    {
-        $values = array();
-
-        foreach ($this->data as $key => $value) {
-            if (!is_array($value)) {
-                $values[$key] = $value;
-            }
-        }
-
-        return $values;
-    }
-
-    /**
-     * (non-PHPdoc)
      * @see \Config\ConfigCursorInterface::has()
      */
     public function has($path)

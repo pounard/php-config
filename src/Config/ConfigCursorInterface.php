@@ -12,12 +12,13 @@ use Config\Schema\EntrySchemaInterface;
  * An entry is a key/value pair
  * A section is a subtree containing entries and sections
  *
- * Countable will count the total number of children, entries included
+ * \Traversable will iterate over all of sections and entries
  *
- * ArrayAccess interface will give you sugar candy aliases for get(), set(),
+ * \Countable will count the total number of children, section and entries to
+ * be in sync with the \Traversable interface
+ *
+ * \ArrayAccess interface will give you sugar candy aliases for get(), set(),
  * delete() and has() methods
- *
- * Traversable will iterate over all of sections and entries
  */
 interface ConfigCursorInterface extends
     \Countable,
@@ -76,23 +77,6 @@ interface ConfigCursorInterface extends
     public function getCursor($path);
 
     /**
-     * Return an iterator of sections under this cursor
-     *
-     * @return \Traversable Values given by this iterator will be a set of
-     *                      ConfigCursorInterface instances, keys will be local
-     *                      section names. It can be empty
-     */
-    public function getSections();
-
-    /**
-     * Return an iterator of values under this cursor
-     *
-     * @return \Traversable Values given by this iterator will be scalar values
-     *                      or list of scalar values. It can be empty
-     */
-    public function getValues();
-
-    /**
      * Does the specified ebtry exists
      *
      * @param string $path          Relative path to check for existence
@@ -129,18 +113,6 @@ interface ConfigCursorInterface extends
      * @throws InvalidPathException If path does not exist or is not an entry
      */
     public function delete($path);
-
-    /**
-     * Get single entry schema for the given path
-     *
-     * @param string $path           Path for which to get the schema, must be
-     *                               an entry
-     *
-     * @return EntrySchemaInterface Schema instance
-     *
-     * @throws InvalidPathException  If path does not exists or is not an entry
-     */
-    public function getEntrySchema($path);
 
     /**
      * Self introspect full configuration from this cursor and return it as a
