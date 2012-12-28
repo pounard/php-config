@@ -56,6 +56,16 @@ The following example will show you how to set and get values from a
 configuration cursor. Note that a configuration backend is nothing more than
 a cursor which is considered as being the root of the configuration tree.
 
+For example, consider the following _config.ini_ file:
+
+    ; My application configuration
+    foo = bar
+
+    [a]
+    foo = baz
+
+And the following sample code:
+
     // You have to start with something
     $config = new MemoryBackend(
         parse_ini_file("config.ini", true));
@@ -64,6 +74,13 @@ a cursor which is considered as being the root of the configuration tree.
     if ($config['a/b/c']) {
         do_something();
     }
+
+    // Next 2 will echo "bar"
+    echo $config['foo'];
+    echo $config['/foo'];
+
+    // Next 2 will echo "baz"
+    echo $config['a/foo'];
 
     // Set a value (schema less if unknown)
     $config['a/b/c'] = 42;
@@ -82,11 +99,6 @@ a cursor which is considered as being the root of the configuration tree.
             echo $key, " is ", $value;
         }
     }
-
-    // And introspect schema too
-    $entrySchema = $config->getSchema('a.b.c');
-    echo $entrySchema->getShortDescription(), "\n",
-         $entrySchema->getType(), "\n";
 
 Instanciating a full configuration stack
 ----------------------------------------
