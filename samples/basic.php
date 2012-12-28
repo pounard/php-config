@@ -31,6 +31,10 @@ $cursor = $config->getCursor('a/b');
 // Works with relative path, this echoes 42
 echo "a/b/c (cursor): ", $cursor['c'], "\n";
 
+/*
+ * This cannot work yet as the passthrough cursor does not implement
+ * the getIterator() and count() methods
+ *
 // You can introspect easily
 foreach ($cursor as $key => $entry) {
     if ($entry instanceof ConfigCursorInterface) {
@@ -40,3 +44,4 @@ foreach ($cursor as $key => $entry) {
         echo $key, " is ", $value, "\n";
     }
 }
+ */
