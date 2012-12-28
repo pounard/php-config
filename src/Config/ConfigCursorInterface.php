@@ -44,13 +44,6 @@ interface ConfigCursorInterface extends
     public function isOrphaned();
 
     /**
-     * Does this instance is readonly
-     *
-     * @return bool True if readonly
-     */
-    public function isReadonly();
-
-    /**
      * Get this instance full path including its key
      *
      * @return string Can be null if instance is orphaned or root

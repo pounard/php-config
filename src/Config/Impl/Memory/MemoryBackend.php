@@ -35,17 +35,14 @@ class MemoryBackend extends AbstractCursor implements ConfigBackendInterface
      * Default constructor
      *
      * @param array &$data   Arbitrary data
-     * @param bool $readonly True if the current instance is readonly
      */
-    public function __construct(array &$data = null, $readonly = false)
+    public function __construct(array &$data = null)
     {
         if (null === $data) {
             $this->data = array();
         } else {
             $this->data = &$data;
         }
-
-        $this->readonly = $readonly;
     }
 
     /**
@@ -62,15 +59,6 @@ class MemoryBackend extends AbstractCursor implements ConfigBackendInterface
      * @see \Config\ConfigCursorInterface::isOrphaned()
      */
     public function isOrphaned()
-    {
-        return false;
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see \Config\ConfigCursorInterface::isReadonly()
-     */
-    public function isReadonly()
     {
         return false;
     }

@@ -148,15 +148,6 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
 
     /**
      * (non-PHPdoc)
-     * @see \Config\ConfigCursorInterface::isReadonly()
-     */
-    public function isReadonly()
-    {
-        return false;
-    }
-
-    /**
-     * (non-PHPdoc)
      * @see \Config\ConfigCursorInterface::getPath()
      */
     public function getPath()

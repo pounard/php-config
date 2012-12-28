@@ -89,15 +89,6 @@ final class PassThroughCursor extends AbstractSchemaAware implements
 
     /**
      * (non-PHPdoc)
-     * @see \Config\ConfigCursorInterface::isReadonly()
-     */
-    public function isReadonly()
-    {
-        return $this->backend->isReadonly();
-    }
-
-    /**
-     * (non-PHPdoc)
      * @see \Config\ConfigCursorInterface::getPath()
      */
     public function getPath()
