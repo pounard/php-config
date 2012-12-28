@@ -4,7 +4,7 @@ namespace Config\Impl;
 
 use Config\ConfigBackendInterface;
 use Config\ConfigCursorInterface;
-use Config\PathHelper;
+use Config\Path;
 
 /**
  * Implementation of cursor that isn't storage specific and completely rely
@@ -48,7 +48,7 @@ final class PassThroughCursor extends AbstractSchemaAware implements
         $this->backend = $backend;
         $this->path = $path;
 
-        $this->key = PathHelper::getLastSegment($this->path);
+        $this->key = Path::getLastSegment($this->path);
     }
 
     /**
@@ -120,8 +120,7 @@ final class PassThroughCursor extends AbstractSchemaAware implements
      */
     public function getCursor($path)
     {
-        return $this->backend->getCursor(
-            PathHelper::join($this->path, $path));
+        return $this->backend->getCursor(Path::join($this->path, $path));
     }
 
     /**
@@ -153,8 +152,7 @@ final class PassThroughCursor extends AbstractSchemaAware implements
      */
     public function has($path)
     {
-        return $this->backend->has(
-            PathHelper::join($this->path, $path));
+        return $this->backend->has(Path::join($this->path, $path));
     }
 
     /**
@@ -163,8 +161,7 @@ final class PassThroughCursor extends AbstractSchemaAware implements
      */
     public function get($path)
     {
-        return $this->backend->get(
-            PathHelper::join($this->path, $path));
+        return $this->backend->get(Path::join($this->path, $path));
     }
 
     /**
@@ -173,8 +170,7 @@ final class PassThroughCursor extends AbstractSchemaAware implements
      */
     public function set($path, $value)
     {
-        return $this->backend->set(
-            PathHelper::join($this->path, $path), $value);
+        return $this->backend->set(Path::join($this->path, $path), $value);
     }
 
     /**
@@ -183,8 +179,7 @@ final class PassThroughCursor extends AbstractSchemaAware implements
      */
     public function delete($path)
     {
-        return $this->backend->delete(
-            PathHelper::join($this->path, $path));
+        return $this->backend->delete(Path::join($this->path, $path));
     }
 
     /**
@@ -193,8 +188,7 @@ final class PassThroughCursor extends AbstractSchemaAware implements
      */
     public function getEntrySchema($path)
     {
-        return $this->backend->getEntrySchema(
-            PathHelper::join($this->path, $path));
+        return $this->backend->getEntrySchema(Path::join($this->path, $path));
     }
 
     /**
@@ -212,8 +206,7 @@ final class PassThroughCursor extends AbstractSchemaAware implements
      */
     public function offsetExists($offset)
     {
-        return $this->backend->has(
-            PathHelper::join($this->path, $offset));
+        return $this->backend->has(Path::join($this->path, $offset));
     }
 
     /**
@@ -222,8 +215,7 @@ final class PassThroughCursor extends AbstractSchemaAware implements
      */
     public function offsetGet($offset)
     {
-        return $this->backend->get(
-            PathHelper::join($this->path, $offset));
+        return $this->backend->get(Path::join($this->path, $offset));
     }
 
     /**
@@ -232,8 +224,7 @@ final class PassThroughCursor extends AbstractSchemaAware implements
      */
     public function offsetSet($offset, $value)
     {
-        return $this->backend->set(
-            PathHelper::join($this->path, $offset), $value);
+        return $this->backend->set(Path::join($this->path, $offset), $value);
     }
 
     /**
@@ -242,7 +233,6 @@ final class PassThroughCursor extends AbstractSchemaAware implements
      */
     public function offsetUnset($offset)
     {
-        return $this->backend->delete(
-            PathHelper::join($this->path, $offset));
+        return $this->backend->delete(Path::join($this->path, $offset));
     }
 }

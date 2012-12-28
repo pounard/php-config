@@ -4,12 +4,12 @@ namespace Config;
 
 use Config\Error\InvalidPathException;
 
-final class PathHelper
+final class Path
 {
     /**
      * Path separator
      */
-    const PATH_SEPARATOR = '/';
+    const SEPARATOR = '/';
 
     /**
      * Pure performance helper.
@@ -63,18 +63,18 @@ final class PathHelper
      *
      * @return bool        True if path is valid
      */
-    static public function isValidPath($path)
+    static public function isValid($path)
     {
         if (0 === ($len = strlen($path))) {
             self::$lastError = "Path is empty";
             return false;
-        } else if (false === ($pos = strpos($path, self::PATH_SEPARATOR))) {
+        } else if (false === ($pos = strpos($path, self::SEPARATOR))) {
             return true;
-        /* } else if (self::PATH_SEPARATOR === $path[0]) {
-            self::$lastError = sprintf("Path starts with %s", self::PATH_SEPARATOR);
+        /* } else if (self::SEPARATOR === $path[0]) {
+            self::$lastError = sprintf("Path starts with %s", self::SEPARATOR);
             return false; */
-        } else if (self::PATH_SEPARATOR === $path[$len - 1]) {
-            self::$lastError = sprintf("Path ends with %s", self::PATH_SEPARATOR);
+        } else if (self::SEPARATOR === $path[$len - 1]) {
+            self::$lastError = sprintf("Path ends with %s", self::SEPARATOR);
             return false;
         } else if (false !== strpos($path, self::EMPTY_SEGMENT)) {
             self::$lastError = "Path contains one or more empty segment";
@@ -95,11 +95,11 @@ final class PathHelper
      */
     public static function getLastSegment($path)
     {
-        if (!self::isValidPath($path)) {
+        if (!self::isValid($path)) {
             throw new InvalidPathException($path, self::getLastError());
         }
 
-        if (false !== ($pos = strrpos($path, self::PATH_SEPARATOR))) {
+        if (false !== ($pos = strrpos($path, self::SEPARATOR))) {
             return substr($path, $pos + 1);
         } else {
             return $path;
@@ -119,12 +119,12 @@ final class PathHelper
 
         // Clean leading separators (which is valid)
         foreach ($args as &$arg) {
-            if (0 === strpos($arg, self::PATH_SEPARATOR)) {
+            if (0 === strpos($arg, self::SEPARATOR)) {
                 $arg = substr($arg, 1);
             }
         }
 
-        return implode(self::PATH_SEPARATOR, $args);
+        return implode(self::SEPARATOR, $args);
     }
 
     /**
@@ -136,9 +136,9 @@ final class PathHelper
      */
     static public function trim($path)
     {
-        if (!PathHelper::isValidPath($path)) {
+        if (!Path::isValid($path)) {
             return false;
-        } else if (0 === strpos($path, PathHelper::PATH_SEPARATOR)) {
+        } else if (0 === strpos($path, Path::SEPARATOR)) {
             return substr($path, 1);
         } else {
             return $path;

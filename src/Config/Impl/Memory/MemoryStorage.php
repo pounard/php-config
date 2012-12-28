@@ -3,7 +3,7 @@
 namespace Config\Impl\Memory;
 
 use Config\ConfigType;
-use Config\PathHelper;
+use Config\Path;
 use Config\Storage\StorageInterface;
 
 /**
@@ -43,7 +43,7 @@ class MemoryStorage implements StorageInterface
     {
         $ret = null;
 
-        if (!$path = PathHelper::trim($path)) {
+        if (!$path = Path::trim($path)) {
             $this->status = StorageInterface::ERROR_PATH_INVALID;
         } else if (isset($this->types[$path])) {
             if ($expectedType === $this->types[$path]) {
@@ -67,7 +67,7 @@ class MemoryStorage implements StorageInterface
     {
         $ret = false;
 
-        if (!$path = PathHelper::trim($path)) {
+        if (!$path = Path::trim($path)) {
             $this->status = StorageInterface::ERROR_PATH_INVALID;
         } else {
             $this->status = StorageInterface::SUCCESS;
@@ -83,7 +83,7 @@ class MemoryStorage implements StorageInterface
      */
     public function isWritable($path)
     {
-        return false !== PathHelper::trim($path);
+        return false !== Path::trim($path);
     }
 
     /**
@@ -92,7 +92,7 @@ class MemoryStorage implements StorageInterface
      */
     public function write($path, $value, $type = ConfigType::MIXED, $safe = true)
     {
-        if (!$path = PathHelper::trim($path)) {
+        if (!$path = Path::trim($path)) {
             $this->status = StorageInterface::ERROR_PATH_INVALID;
         } else {
             // FIXME: Handle type and CAAAAAAAST!!!
@@ -114,7 +114,7 @@ class MemoryStorage implements StorageInterface
      */
     public function delete($path, $safe = true)
     {
-        if (!$path = PathHelper::trim($path)) {
+        if (!$path = Path::trim($path)) {
             $this->status = StorageInterface::ERROR_PATH_INVALID;
         } else {
 

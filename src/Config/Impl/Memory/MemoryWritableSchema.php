@@ -2,7 +2,7 @@
 
 namespace Config\Impl\Memory;
 
-use Config\PathHelper;
+use Config\Path;
 use Config\Schema\DefaultEntrySchema;
 use Config\Schema\SchemaInterface;
 use Config\Schema\WritableSchemaInterface;
@@ -36,7 +36,7 @@ class MemoryWritableSchema implements
      */
     public function getEntrySchema($path)
     {
-        if (($path = PathHelper::trim($path)) && isset($this->map[$path])) {
+        if (($path = Path::trim($path)) && isset($this->map[$path])) {
             return $this->map[$path];
         } else {
             return new DefaultEntrySchema($path, 'none');
@@ -49,7 +49,7 @@ class MemoryWritableSchema implements
      */
     public function exists($path)
     {
-        if ($path = PathHelper::trim($path)) {
+        if ($path = Path::trim($path)) {
             return isset($this->map[$path]);
         } else {
             return false;
@@ -93,7 +93,7 @@ class MemoryWritableSchema implements
             if (null === $path) {
                 $realpath = $entry->getPath();
             } else {
-                $realpath = PathHelper::join($path, $entry->getPath());
+                $realpath = Path::join($path, $entry->getPath());
             }
 
             if (!$overwrite && isset($this->map[$realpath])) {

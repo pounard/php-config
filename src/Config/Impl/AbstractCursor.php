@@ -4,7 +4,7 @@ namespace Config\Impl;
 
 use Config\ConfigCursorInterface;
 use Config\ConfigType;
-use Config\PathHelper;
+use Config\Path;
 use Config\Schema\DefaultEntrySchema;
 use Config\Schema\NullSchema;
 
@@ -41,7 +41,7 @@ abstract class AbstractCursor extends AbstractSchemaAware implements
         $entry   = null;
 
         if (!$this->isRoot()) {
-            $path = PathHelper::join($this->getPath(), $relPath);
+            $path = Path::join($this->getPath(), $relPath);
         }
 
         if (!$schema instanceof NullSchema) {

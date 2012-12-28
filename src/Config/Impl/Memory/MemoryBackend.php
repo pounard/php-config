@@ -6,7 +6,7 @@ use Config\ConfigBackendInterface;
 use Config\Error\InvalidPathException;
 use Config\Impl\AbstractCursor;
 use Config\Impl\PassThroughCursor;
-use Config\PathHelper;
+use Config\Path;
 use Config\Schema\SchemaInterface;
 
 /**
@@ -185,8 +185,8 @@ class MemoryBackend extends AbstractCursor implements ConfigBackendInterface
      */
     protected function &findPath($path, $create = false)
     {
-        if (!PathHelper::isValidPath($path)) {
-            throw new InvalidPathException($path, PathHelper::getLastError());
+        if (!Path::isValid($path)) {
+            throw new InvalidPathException($path, Path::getLastError());
         }
 
         $parts   = explode('.', $path);
@@ -199,10 +199,10 @@ class MemoryBackend extends AbstractCursor implements ConfigBackendInterface
             if (!array_key_exists($key, $current)) {
                 $current[$key] = array();
                 if (!$create) {
-                    PathHelper::setLastError(sprintf("Expected a section for segment '%s', nothing found instead", $key));
+                    Path::setLastError(sprintf("Expected a section for segment '%s', nothing found instead", $key));
                 }
             } elseif (!empty($parts) && !is_array($current[$key])) {
-                PathHelper::setLastError(sprintf("Expected a section for segment '%s', value found instead", $key));
+                Path::setLastError(sprintf("Expected a section for segment '%s', value found instead", $key));
                 return array();
             }
 
