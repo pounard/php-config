@@ -22,4 +22,11 @@ interface SchemaAwareInterface
      * @return SchemaInterface
      */
     public function getSchema();
+
+    /**
+     * Tell if this instance really has a schema
+     *
+     * @return bool True if a schema is set
+     */
+    public function hasSchema();
 }

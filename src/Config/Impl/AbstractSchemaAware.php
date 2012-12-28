@@ -34,4 +34,13 @@ abstract class AbstractSchemaAware implements SchemaAwareInterface
 
         return $this->schema;
     }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Config\Schema\SchemaAwareInterface::hasSchema()
+     */
+    final public function hasSchema()
+    {
+        return null !== $this->schema && !$this->schema instanceof NullSchema;
+    }
 }
