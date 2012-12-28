@@ -46,19 +46,24 @@ abstract class AbstractStorageTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(StorageInterface::SUCCESS, $storage->getLastStatus());
 
         // Set another key, retrieve it
-        $this->assertFalse($storage->exists('a.b.c'));
-        $storage->write('a.b.c', "test", ConfigType::STRING);
-        $value = $storage->read('a.b.c', ConfigType::STRING);
+        $this->assertFalse($storage->exists('a/b/c'));
+        $storage->write('a/b/c', "test", ConfigType::STRING);
+        $value = $storage->read('a/b/c', ConfigType::STRING);
+        $this->assertSame("test", $value);
+        $this->assertSame(StorageInterface::SUCCESS, $storage->getLastStatus());
+
+        // Leading separator is OK
+        $value = $storage->read('/a/b/c', ConfigType::STRING);
         $this->assertSame("test", $value);
         $this->assertSame(StorageInterface::SUCCESS, $storage->getLastStatus());
 
         // Delete it
-        $storage->delete('a.b.c');
+        $storage->delete('a/b/c');
         $this->assertSame(StorageInterface::SUCCESS, $storage->getLastStatus());
-        $this->assertFalse($storage->exists('a.b.c'));
+        $this->assertFalse($storage->exists('a/b/c'));
 
         // Set a new key and check it is writable
-        $storage->write('a.b.c', "test", ConfigType::STRING);
+        $storage->write('a/b/c', "test", ConfigType::STRING);
 
         // Get a non existing key
 

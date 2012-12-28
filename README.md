@@ -26,6 +26,20 @@ It also gives:
    two simple callables: a cache setter and a cache getter for working;
    Allowing you to easily add a cache layer for configuration.
 
+Main features:
+
+ * Every value is identified by a path, e.g. _a/b/c_.
+
+ * Every value is typed using a primitive type or a list or hashmap of
+   primitive types.
+
+ * All paths together give a single tree in which the full configuration values
+   can be read and written.
+
+ * All path may be defined in a schema. Schema allows tree introspection.
+
+ * Error control on read/write operations which disallows mistyping values.
+
 Getting started
 ===============
 
@@ -41,15 +55,15 @@ a cursor which is considered as being the root of the configuration tree.
         parse_ini_file("config.ini", true));
 
     // Simple read operation
-    if ($config['a.b.c']) {
+    if ($config['a/b/c']) {
         do_something();
     }
 
     // Set a value (schema less if unknown)
-    $config['a.b.c'] = 42;
+    $config['a/b/c'] = 42;
 
     // Get a sub tree cursor
-    $cursor = $config->getCursor('a.b');
+    $cursor = $config->getCursor('a/b');
     // Works with relative path, this echoes 42
     echo $cursor['c'];
 
@@ -98,8 +112,8 @@ the next example.
 
     $cursor = new StoredBackend($storage, $schema, $root);
 
-From this point, the __$cursor__ variable is read to be used. As explained
-upper, this cursor is also the __backend__. You can from this point store a
+From this point, the _$cursor_ variable is read to be used. As explained
+upper, this cursor is also the _backend_. You can from this point store a
 pointer to the $cursor backend anywhere, as in example a dependency injection
 container, and use it in your application.
 
@@ -135,4 +149,3 @@ I won't lie, this is unfinished. The main goal was to plug it on GConf for a
 specific PHP application. Still doable, using php-dbus (search DBus in PECL
 site). I may do it some day that's something I'd be terribly curious to
 benchmark.
-

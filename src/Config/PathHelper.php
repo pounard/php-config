@@ -9,12 +9,12 @@ final class PathHelper
     /**
      * Path separator
      */
-    const PATH_SEPARATOR = '.';
+    const PATH_SEPARATOR = '/';
 
     /**
      * Pure performance helper.
      */
-    const EMPTY_SEGMENT = '..';
+    const EMPTY_SEGMENT = '//';
 
     /**
      * Name validation PCRE regex
@@ -49,7 +49,7 @@ final class PathHelper
      *
      * @param string $message Error message
      */
-    public static function setLastError($message)
+    static public function setLastError($message)
     {
         self::$lastError = $message;
     }
@@ -63,16 +63,16 @@ final class PathHelper
      *
      * @return bool        True if path is valid
      */
-    public static function isValidPath($path)
+    static public function isValidPath($path)
     {
         if (0 === ($len = strlen($path))) {
             self::$lastError = "Path is empty";
             return false;
         } else if (false === ($pos = strpos($path, self::PATH_SEPARATOR))) {
             return true;
-        } else if (self::PATH_SEPARATOR === $path[0]) {
+        /* } else if (self::PATH_SEPARATOR === $path[0]) {
             self::$lastError = sprintf("Path starts with %s", self::PATH_SEPARATOR);
-            return false;
+            return false; */
         } else if (self::PATH_SEPARATOR === $path[$len - 1]) {
             self::$lastError = sprintf("Path ends with %s", self::PATH_SEPARATOR);
             return false;
@@ -113,8 +113,35 @@ final class PathHelper
      *
      * @return string New path
      */
-    public static function join()
+    static public function join()
     {
-        return implode(self::PATH_SEPARATOR, func_get_args());
+        $args = func_get_args();
+
+        // Clean leading separators (which is valid)
+        foreach ($args as &$arg) {
+            if (0 === strpos($arg, self::PATH_SEPARATOR)) {
+                $arg = substr($arg, 1);
+            }
+        }
+
+        return implode(self::PATH_SEPARATOR, $args);
+    }
+
+    /**
+     * Ensures that path is valid and clean leading separator
+     *
+     * @param string $path Path
+     *
+     * @return string      Trimmed path, false if invalid
+     */
+    static public function trim($path)
+    {
+        if (!PathHelper::isValidPath($path)) {
+            return false;
+        } else if (0 === strpos($path, PathHelper::PATH_SEPARATOR)) {
+            return substr($path, 1);
+        } else {
+            return $path;
+        }
     }
 }

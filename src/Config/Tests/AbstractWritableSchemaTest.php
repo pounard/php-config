@@ -30,33 +30,33 @@ abstract class AbstractWritableSchemaTest extends \PHPUnit_Framework_TestCase
         $schema = $this->schema;
 
         $definition = array(
-            'a.b.c' => new DefaultEntrySchema(
-                'a.b.c',
+            'a/b/c' => new DefaultEntrySchema(
+                'a/b/c',
                 'schema1',
                 ConfigType::INT,
                 null,
-                "Short a.b.c",
-                "Long a.b.c",
+                "Short a/b/c",
+                "Long a/b/c",
                 'fr_FR',
                 12
             ),
-            'a.b.d' => new DefaultEntrySchema(
-                'a.b.d',
+            'a/b/d' => new DefaultEntrySchema(
+                'a/b/d',
                 'schema1',
                 ConfigType::STRING,
                 null,
-                "Short a.b.d",
-                "Long a.b.d",
+                "Short a/b/d",
+                "Long a/b/d",
                 'fr_FR',
                 "foo"
             ),
-            'a.b.e' => new DefaultEntrySchema(
-                'a.b.e',
+            'a/b/e' => new DefaultEntrySchema(
+                'a/b/e',
                 'schema2',
                 ConfigType::STRING,
                 null,
-                "Short a.b.e",
-                "Long a.b.e",
+                "Short a/b/e",
+                "Long a/b/e",
                 'fr_FR',
                 "bar"
             ),
@@ -66,14 +66,14 @@ abstract class AbstractWritableSchemaTest extends \PHPUnit_Framework_TestCase
         // Test merge
         $schema->merge($newSchema);
 
-        $entry = $schema->getEntrySchema('a.b.c');
-        $this->assertSame("a.b.c", $entry->getPath());
+        $entry = $schema->getEntrySchema('a/b/c');
+        $this->assertSame("a/b/c", $entry->getPath());
         $this->assertSame("schema1", $entry->getSchemaId());
         $this->assertSame(ConfigType::INT, $entry->getType());
         $this->assertSame(12, $entry->getDefaultValue());
 
-        $entry = $schema->getEntrySchema('a.b.e');
-        $this->assertSame("a.b.e", $entry->getPath());
+        $entry = $schema->getEntrySchema('a/b/e');
+        $this->assertSame("a/b/e", $entry->getPath());
         $this->assertSame("schema2", $entry->getSchemaId());
         $this->assertSame(ConfigType::STRING, $entry->getType());
         $this->assertSame("bar", $entry->getDefaultValue());
@@ -83,13 +83,13 @@ abstract class AbstractWritableSchemaTest extends \PHPUnit_Framework_TestCase
 
         // Everything OK, now test some overrides (default behavior)
         $newSchemaOverride = new MemoryWritableSchema(array(
-            'a.b.e' => new DefaultEntrySchema(
-                'a.b.e',
+            'a/b/e' => new DefaultEntrySchema(
+                'a/b/e',
                 'schema2',
                 ConfigType::TUPLE,
                 ConfigType::INT,
-                "Short overriden a.b.e",
-                "Long a.b.e",
+                "Short overriden a/b/e",
+                "Long a/b/e",
                 'fr_FR',
                 array(1, 2)
             ),
@@ -97,12 +97,12 @@ abstract class AbstractWritableSchemaTest extends \PHPUnit_Framework_TestCase
 
         $schema->merge($newSchemaOverride);
 
-        $entry = $schema->getEntrySchema('a.b.e');
-        $this->assertSame("a.b.e", $entry->getPath());
+        $entry = $schema->getEntrySchema('a/b/e');
+        $this->assertSame("a/b/e", $entry->getPath());
         $this->assertSame("schema2", $entry->getSchemaId());
         $this->assertSame(ConfigType::TUPLE, $entry->getType());
         $this->assertSame(ConfigType::INT, $entry->getListType());
-        $this->assertSame("Short overriden a.b.e", $entry->getShortDescription());
+        $this->assertSame("Short overriden a/b/e", $entry->getShortDescription());
 
         // Ok now do it once again, without override
         $newSchemaNoOverride = new MemoryWritableSchema($definition + array(
@@ -120,10 +120,10 @@ abstract class AbstractWritableSchemaTest extends \PHPUnit_Framework_TestCase
 
         $schema->merge($newSchemaNoOverride, false);
 
-        $entry = $schema->getEntrySchema('a.b.e');
+        $entry = $schema->getEntrySchema('a/b/e');
         $this->assertSame(ConfigType::TUPLE, $entry->getType());
         $this->assertSame(ConfigType::INT, $entry->getListType());
-        $this->assertSame("Short overriden a.b.e", $entry->getShortDescription());
+        $this->assertSame("Short overriden a/b/e", $entry->getShortDescription());
 
         // Also test that new entries where merged
         $entry = $schema->getEntrySchema('test1');
@@ -140,15 +140,15 @@ abstract class AbstractWritableSchemaTest extends \PHPUnit_Framework_TestCase
         $schema->remove('test1');
         $this->assertFalse($schema->exists('test1'));
 
-        $schema->remove(array('non_existing', 'a.b.c'));
-        $this->assertFalse($schema->exists('a.b.c'));
+        $schema->remove(array('non_existing', 'a/b/c'));
+        $this->assertFalse($schema->exists('a/b/c'));
 
         // And also test unmerge
-        $this->assertTrue($schema->exists('a.b.d'));
+        $this->assertTrue($schema->exists('a/b/d'));
         $schema->unmerge("schema1");
-        $this->assertFalse($schema->exists('a.b.c'));
-        $this->assertFalse($schema->exists('a.b.d'));
-        $this->assertTrue($schema->exists('a.b.e'));
+        $this->assertFalse($schema->exists('a/b/c'));
+        $this->assertFalse($schema->exists('a/b/d'));
+        $this->assertTrue($schema->exists('a/b/e'));
         $this->assertFalse($schema->exists('test1'));
         $this->assertFalse($schema->exists('test2'));
     }
@@ -170,16 +170,16 @@ abstract class AbstractWritableSchemaTest extends \PHPUnit_Framework_TestCase
 
         $sampleSchema = new MemoryWritableSchema(array('test1' => $sampleEntry));
 
-        $this->assertFalse($schema->exists('a.b.c.test'));
-        $this->assertFalse($schema->exists('a.b.d.test'));
-        $this->assertFalse($schema->exists('foo.bar.test'));
+        $this->assertFalse($schema->exists('a/b/c.test'));
+        $this->assertFalse($schema->exists('a/b/d.test'));
+        $this->assertFalse($schema->exists('foo/bar/test'));
 
-        $schema->relocate('a.b.c', $sampleSchema);
-        $schema->relocate('a.b.d', $sampleSchema);
-        $schema->relocate('foo.bar', $sampleSchema);
+        $schema->relocate('a/b/c', $sampleSchema);
+        $schema->relocate('a/b/d', $sampleSchema);
+        $schema->relocate('foo/bar', $sampleSchema);
 
-        $this->assertTrue($schema->exists('a.b.c.test'));
-        $this->assertTrue($schema->exists('a.b.d.test'));
-        $this->assertTrue($schema->exists('foo.bar.test'));
+        $this->assertTrue($schema->exists('a/b/c/test'));
+        $this->assertTrue($schema->exists('/a/b/d/test'));
+        $this->assertTrue($schema->exists('foo/bar/test'));
     }
 }

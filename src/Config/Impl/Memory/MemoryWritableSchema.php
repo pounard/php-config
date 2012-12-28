@@ -36,7 +36,7 @@ class MemoryWritableSchema implements
      */
     public function getEntrySchema($path)
     {
-        if (isset($this->map[$path])) {
+        if (($path = PathHelper::trim($path)) && isset($this->map[$path])) {
             return $this->map[$path];
         } else {
             return new DefaultEntrySchema($path, 'none');
@@ -49,7 +49,11 @@ class MemoryWritableSchema implements
      */
     public function exists($path)
     {
-        return isset($this->map[$path]);
+        if ($path = PathHelper::trim($path)) {
+            return isset($this->map[$path]);
+        } else {
+            return false;
+        }
     }
 
     /**

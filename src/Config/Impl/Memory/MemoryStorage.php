@@ -43,7 +43,7 @@ class MemoryStorage implements StorageInterface
     {
         $ret = null;
 
-        if (!PathHelper::isValidPath($path)) {
+        if (!$path = PathHelper::trim($path)) {
             $this->status = StorageInterface::ERROR_PATH_INVALID;
         } else if (isset($this->types[$path])) {
             if ($expectedType === $this->types[$path]) {
@@ -65,15 +65,16 @@ class MemoryStorage implements StorageInterface
      */
     public function exists($path)
     {
-        if (!PathHelper::isValidPath($path)) {
-            $this->status = StorageInterface::ERROR_PATH_INVALID;
+        $ret = false;
 
-            return false;
+        if (!$path = PathHelper::trim($path)) {
+            $this->status = StorageInterface::ERROR_PATH_INVALID;
+        } else {
+            $this->status = StorageInterface::SUCCESS;
+            $ret = isset($this->types[$path]);
         }
 
-        $this->status = StorageInterface::SUCCESS;
-
-        return isset($this->types[$path]);
+        return $ret;
     }
 
     /**
@@ -82,7 +83,7 @@ class MemoryStorage implements StorageInterface
      */
     public function isWritable($path)
     {
-        return true;
+        return false !== PathHelper::trim($path);
     }
 
     /**
@@ -91,21 +92,19 @@ class MemoryStorage implements StorageInterface
      */
     public function write($path, $value, $type = ConfigType::MIXED, $safe = true)
     {
-        if (!PathHelper::isValidPath($path)) {
+        if (!$path = PathHelper::trim($path)) {
             $this->status = StorageInterface::ERROR_PATH_INVALID;
-
-            return;
-        }
-
-        // FIXME: Handle type and CAAAAAAAST!!!
-
-        $this->data[$path] = $value;
-        $this->types[$path] = $type;
-
-        if ($safe) {
-            $this->status = StorageInterface::SUCCESS;
         } else {
-            $this->status = StorageInterface::STATUS_UNKNOWN;
+            // FIXME: Handle type and CAAAAAAAST!!!
+
+            $this->data[$path] = $value;
+            $this->types[$path] = $type;
+
+            if ($safe) {
+                $this->status = StorageInterface::SUCCESS;
+            } else {
+                $this->status = StorageInterface::STATUS_UNKNOWN;
+            }
         }
     }
 
@@ -115,18 +114,17 @@ class MemoryStorage implements StorageInterface
      */
     public function delete($path, $safe = true)
     {
-        if (!PathHelper::isValidPath($path)) {
+        if (!$path = PathHelper::trim($path)) {
             $this->status = StorageInterface::ERROR_PATH_INVALID;
-
-            return;
-        }
-
-        unset($this->data[$path], $this->types[$path]);
-
-        if ($safe) {
-            $this->status = StorageInterface::SUCCESS;
         } else {
-            $this->status = StorageInterface::STATUS_UNKNOWN;
+
+            unset($this->data[$path], $this->types[$path]);
+
+            if ($safe) {
+                $this->status = StorageInterface::SUCCESS;
+            } else {
+                $this->status = StorageInterface::STATUS_UNKNOWN;
+            }
         }
     }
 }
