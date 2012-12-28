@@ -15,7 +15,7 @@ use Config\Schema\SchemaInterface;
  * This implementation can not support list or hashmap value types because it
  * types everything dynamically and works schema less; For example, this:
  * @code
- *   $cursor['a.b.c'] = 12;
+ *   $cursor['a/b/c'] = 12;
  * @endcode
  * Will be equivalent to this:
  * @code
@@ -151,11 +151,11 @@ class MemoryBackend extends AbstractCursor implements ConfigBackendInterface
      */
     protected function &findPath($path, $create = false)
     {
-        if (!Path::isValid($path)) {
+        if (!$path = Path::trim($path)) {
             throw new InvalidPathException($path, Path::getLastError());
         }
 
-        $parts   = explode('.', $path);
+        $parts   = explode(Path::SEPARATOR, $path);
         $current = &$this->data;
 
         while (!empty($parts)) {
