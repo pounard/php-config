@@ -40,6 +40,12 @@ Main features:
 
  * Error control on read/write operations which disallows mistyping values.
 
+ * Can be used with a schema: everything is stricly typed
+
+ * Can be used without a schema: just plug-in any storage, loose the
+   introspection capabilities, but keep the storage plugability and the
+   ArrayAccess syntaxic sugar
+
 Getting started
 ===============
 
