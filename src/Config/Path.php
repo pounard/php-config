@@ -28,33 +28,6 @@ final class Path
         $/imsx';
 
     /**
-     * Latest error message
-     *
-     * @var string
-     */
-    private static $lastError = null;
-
-    /**
-     * Get latest error message
-     *
-     * @return string Latest error message
-     */
-    public static function getLastError()
-    {
-        return self::$lastError;
-    }
-
-    /**
-     * Set latest error message
-     *
-     * @param string $message Error message
-     */
-    static public function setLastError($message)
-    {
-        self::$lastError = $message;
-    }
-
-    /**
      * Tell if the given path is valid
      *
      * FIXME: Ensure that names can only contain letters, numbers and -
@@ -66,18 +39,14 @@ final class Path
     static public function isValid($path)
     {
         if (0 === ($len = strlen($path))) {
-            self::$lastError = "Path is empty";
             return false;
         } else if (false === ($pos = strpos($path, self::SEPARATOR))) {
             return true;
         /* } else if (self::SEPARATOR === $path[0]) {
-            self::$lastError = sprintf("Path starts with %s", self::SEPARATOR);
             return false; */
         } else if (self::SEPARATOR === $path[$len - 1]) {
-            self::$lastError = sprintf("Path ends with %s", self::SEPARATOR);
             return false;
         } else if (false !== strpos($path, self::EMPTY_SEGMENT)) {
-            self::$lastError = "Path contains one or more empty segment";
             return false;
         } else {
             return true;
@@ -96,7 +65,7 @@ final class Path
     public static function getLastSegment($path)
     {
         if (!self::isValid($path)) {
-            throw new InvalidPathException($path, self::getLastError());
+            throw new InvalidPathException($path);
         }
 
         if (false !== ($pos = strrpos($path, self::SEPARATOR))) {

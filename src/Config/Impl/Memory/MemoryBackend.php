@@ -140,24 +140,25 @@ class MemoryBackend extends AbstractCursor implements ConfigBackendInterface
     protected function &findPath($path, $create = false)
     {
         if (!$path = Path::trim($path)) {
-            throw new InvalidPathException($path, Path::getLastError());
+            throw new InvalidPathException($path);
         }
 
         $parts   = explode(Path::SEPARATOR, $path);
         $current = &$this->data;
+        $error   = array();
 
         while (!empty($parts)) {
             $key = array_shift($parts);
 
             // Values can be null hence array_key_exists()
             if (!array_key_exists($key, $current)) {
-                $current[$key] = array();
                 if (!$create) {
-                    Path::setLastError(sprintf("Expected a section for segment '%s', nothing found instead", $key));
+                    return $error;
+                } else {
+                    $current[$key] = array();
                 }
             } elseif (!empty($parts) && !is_array($current[$key])) {
-                Path::setLastError(sprintf("Expected a section for segment '%s', value found instead", $key));
-                return array();
+                return $error;
             }
 
             $current = &$current[$key];
