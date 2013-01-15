@@ -14,10 +14,7 @@ class StoredAccessTest extends AbstractAccessTest
      */
     public function setUp()
     {
-        // FIXME: Fix the StoredBackend class implementation
-        // and remove the next line
-        $this->markTestSkipped("StoredBackend class implementation is not completed yet");
-        //parent::setUp();
+        parent::setUp();
     }
 
     /**

@@ -54,6 +54,18 @@ final class Path
     }
 
     /**
+     * Explode path (get all path segments)
+     *
+     * @param string $path Path
+     *
+     * @return array       Segment list
+     */
+    static public function explode($path)
+    {
+        return explode(self::SEPARATOR, $path);
+    }
+
+    /**
      * Get last path segment
      *
      * @param string $path Path
@@ -86,10 +98,9 @@ final class Path
     {
         $args = func_get_args();
 
-        // Clean leading separators (which is valid)
-        foreach ($args as &$arg) {
-            if (0 === strpos($arg, self::SEPARATOR)) {
-                $arg = substr($arg, 1);
+        foreach ($args as $key => $arg) {
+            if (!$args[$key] = self::trim($arg)) {
+                return false;
             }
         }
 

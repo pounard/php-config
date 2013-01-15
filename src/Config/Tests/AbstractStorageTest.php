@@ -45,6 +45,11 @@ abstract class AbstractStorageTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(42, $value);
         $this->assertSame(StorageInterface::SUCCESS, $storage->getLastStatus());
 
+        // Retrieve it as mixed
+        $value = $storage->read('test1', ConfigType::MIXED);
+        $this->assertSame(42, $value);
+        $this->assertSame(StorageInterface::SUCCESS, $storage->getLastStatus());
+
         // Set another key, retrieve it
         $this->assertFalse($storage->exists('a/b/c'));
         $storage->write('a/b/c', "test", ConfigType::STRING);
@@ -64,6 +69,17 @@ abstract class AbstractStorageTest extends \PHPUnit_Framework_TestCase
 
         // Set a new key and check it is writable
         $storage->write('a/b/c', "test", ConfigType::STRING);
+
+        // Ensure that getKeys() works fine
+        $list = $storage->getKeys();
+        $this->assertCount(2, $list);
+        $this->assertContains('test1', $list);
+        $this->assertContains('a/b/c', $list);
+
+        // And the same with a prefix
+        $list = $storage->getKeys('a/b');
+        $this->assertCount(1, $list);
+        $this->assertContains('a/b/c', $list);
 
         // Get a non existing key
 

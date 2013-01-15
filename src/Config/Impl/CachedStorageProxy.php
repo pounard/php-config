@@ -42,7 +42,7 @@ class CachedStorageProxy implements StorageInterface
     /**
      * @var int
      */
-    private $lastCallStatus = StorageInterface::SUCCESS;
+    private $status = StorageInterface::SUCCESS;
 
     /**
      * @var callable
@@ -121,7 +121,7 @@ class CachedStorageProxy implements StorageInterface
             unset($this->getCallback);
 
             if (is_array($ret)) {
-                list($this->data, $this->exists, $this->exists) = $ret;
+                list($this->data, $this->exists, $this->types) = $ret;
             } else {
                 $this->data = array();
             }
@@ -149,7 +149,7 @@ class CachedStorageProxy implements StorageInterface
 
         if (array_key_exists($path, $this->data)) {
             // This test might save us a useless query
-            if ($expectedType === $this->types[$path]) {
+            if (ConfigType::MIXED === $expectedType || $expectedType === $this->types[$path]) {
                 $ret = $this->data[$path];
                 $this->status = StorageInterface::SUCCESS;
             } else {
@@ -171,6 +171,7 @@ class CachedStorageProxy implements StorageInterface
 
                     case StorageInterface::ERROR_PATH_DOES_NOT_EXIST:
                     case StorageInterface::ERROR_PATH_INVALID:
+                    case StorageInterface::STATUS_UNKNOWN:
                         $this->exists[$path] = false;
                         break;
 
@@ -261,6 +262,8 @@ class CachedStorageProxy implements StorageInterface
      */
     public function write($path, $value, $type = ConfigType::MIXED, $safe = true)
     {
+        $this->ensureCache();
+
         $this->modified = true;
         $this->storage->write($path, $value, $type, $safe);
 
@@ -300,6 +303,8 @@ class CachedStorageProxy implements StorageInterface
      */
     public function delete($path, $safe = true)
     {
+        $this->ensureCache();
+
         $this->modified = true;
         $this->storage->delete($path, $safe);
 
@@ -319,5 +324,19 @@ class CachedStorageProxy implements StorageInterface
             $this->exists[$path],
             $this->types[$path]
         );
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Config\Storage\StorageInterface::getKeys()
+     */
+    public function getKeys($path = null)
+    {
+        // This method should never be called during normal runtime, so it
+        // will act as a normal proxy caching nothing
+        $ret = $this->storage->getKeys($path);
+        $this->status = $this->storage->getLastStatus();
+
+        return $ret;
     }
 }

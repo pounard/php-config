@@ -46,7 +46,7 @@ class MemoryStorage implements StorageInterface
         if (!$path = Path::trim($path)) {
             $this->status = StorageInterface::ERROR_PATH_INVALID;
         } else if (isset($this->types[$path])) {
-            if ($expectedType === $this->types[$path]) {
+            if (ConfigType::MIXED === $expectedType || $expectedType === $this->types[$path]) {
                 $this->status = StorageInterface::SUCCESS;
                 $ret = $this->data[$path];
             } else {
@@ -126,5 +126,41 @@ class MemoryStorage implements StorageInterface
                 $this->status = StorageInterface::STATUS_UNKNOWN;
             }
         }
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Config\Storage\StorageInterface::getKeys()
+     */
+    public function getKeys($path = null)
+    {
+        $ret = array();
+
+        if (null !== $path && !($path = Path::trim($path))) {
+            $this->status = StorageInterface::ERROR_PATH_INVALID;
+        } else {
+            if (null === $path) {
+                $this->status = StorageInterface::SUCCESS;
+                $ret = array_keys($this->data);
+            } else {
+                foreach ($this->data as $localPath => $value) {
+                    if (0 === strpos($localPath, $path) && Path::SEPARATOR === $localPath[strlen($path)]) {
+                        $ret[] = $localPath;
+                    }
+                }
+
+                if (empty($ret)) {
+                    $this->status = StorageInterface::ERROR_PATH_DOES_NOT_EXIST;
+                } else {
+                    $this->status = StorageInterface::SUCCESS;
+                }
+            }
+        }
+
+        if (!empty($ret)) {
+            ksort($ret);
+        }
+
+        return $ret;
     }
 }

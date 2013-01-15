@@ -4,6 +4,8 @@ namespace Config\Impl;
 
 use Config\ConfigBackendInterface;
 use Config\ConfigType;
+use Config\Error\InvalidPathException;
+use Config\Path;
 use Config\Schema\SchemaInterface;
 use Config\Storage\StorageInterface;
 
@@ -29,13 +31,14 @@ use Config\Storage\StorageInterface;
  * Another performance consideration, while this instance will be as fast as
  * the backend and schema can be together, it is also unadvised to use cursors
  * for any other thing than pure administrative introspection, since they will
- * only act as a proxy toward this instance.
+ * add another level of indirection.
  *
  * This instance can be strict or less strict. If the strict mode is enabled,
  * strict checks will be done at both read and write time, if strict mode is
  * disabled, only the write operations will be strict checked. In case no
  * schema is set, this instance will never do strict operations and will
- * always store values as blobs (which is bad)
+ * always store values trying to determine their type dynmically (which is
+ * bad).
  */
 class StoredBackend extends AbstractCursor implements ConfigBackendInterface
 {
@@ -55,6 +58,16 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
     private $safe = true;
 
     /**
+     * @var string
+     */
+    private $rootPath = null;
+
+    /**
+     * @var string
+     */
+    private $path = null;
+
+    /**
      * Default constructor
      *
      * @param StorageInterface $storage Storage backend
@@ -72,14 +85,22 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
         SchemaInterface $schema = null,
         $rootPath               = null,
         $strict                 = true,
-        $safe                   = true)
+        $safe                   = true,
+        $path                   = null)
     {
-        $this->storage = $storage;
-        $this->safe = (bool)$safe;
+        $this->storage  = $storage;
+        $this->safe     = (bool)$safe;
 
         if (null !== $schema) {
             $this->setSchema($schema);
             $this->strict = (bool)$strict;
+        }
+
+        if (null !== $rootPath && !($this->rootPath = Path::trim($rootPath))) {
+            throw new InvalidPathException($rootPath);
+        }
+        if (null !== $path && !($this->path = Path::trim($path))) {
+            throw new InvalidPathException($path);
         }
     }
 
@@ -134,7 +155,7 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
      */
     public function isRoot()
     {
-        return true;
+        return null === $this->path;
     }
 
     /**
@@ -152,7 +173,7 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
      */
     public function getPath()
     {
-        return null;
+        return $this->path;
     }
 
     /**
@@ -161,7 +182,11 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
      */
     public function getKey()
     {
-        return null;
+        if (null === $this->path) {
+            return null;
+        } else {
+            return Path::getLastSegment($this->path);
+        }
     }
 
     /**
@@ -170,7 +195,23 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
      */
     public function getCursor($path)
     {
-        return new PassThroughCursor($this, $path);
+        if (!$relPath = Path::trim($path)) {
+            throw new InvalidPathException($path);
+        }
+
+        if (null === $this->rootPath) {
+            $rootPath = $relPath;
+        } else {
+            $rootPath = Path::join($this->rootPath, $relPath);
+        }
+
+        return new self(
+            $this->storage,
+            $this->getSchema(),
+            $rootPath,
+            $this->strict,
+            $this->safe,
+            $relPath);
     }
 
     /**
@@ -179,6 +220,13 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
      */
     public function has($path)
     {
+        if (null !== $this->rootPath) {
+            $path = Path::join($this->rootPath, $path);
+        }
+        if (!Path::isValid($path)) {
+            throw new InvalidPathException($path);
+        }
+
         return $this->storage->exists($path);
     }
 
@@ -188,7 +236,14 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
      */
     public function get($path)
     {
-        if ($this->strict) {
+        if (null !== $this->rootPath) {
+            $path = Path::join($this->rootPath, $path);
+        }
+        if (!Path::isValid($path)) {
+            throw new InvalidPathException($path);
+        }
+
+        if ($this->strict && $this->hasSchema()) {
             $entry = $this->getSchema()->getEntrySchema($path);
 
             return $this->storage->read($path, $entry->getType());
@@ -203,9 +258,20 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
      */
     public function set($path, $value)
     {
-        $entry = $this->getSchema()->getEntrySchema($path);
+        if (null !== $this->rootPath) {
+            $path = Path::join($this->rootPath, $path);
+        }
+        if (!Path::isValid($path)) {
+            throw new InvalidPathException($path);
+        }
 
-        $this->storage->write($path, $value, $entry->getType(), $this->safe);
+        if ($this->hasSchema()) {
+            $type = $this->getSchema()->getEntrySchema($path)->getType();
+        } else {
+            $type = ConfigType::getType($value);
+        }
+
+        $this->storage->write($path, $value, $type, $this->safe);
     }
 
     /**
@@ -214,6 +280,13 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
      */
     public function delete($path)
     {
+        if (null !== $this->rootPath) {
+            $path = Path::join($this->rootPath, $path);
+        }
+        if (!Path::isValid($path)) {
+            throw new InvalidPathException($path);
+        }
+
         return $this->storage->delete($path);
     }
 
@@ -226,7 +299,24 @@ class StoredBackend extends AbstractCursor implements ConfigBackendInterface
      */
     public function toArray()
     {
-        // Must rely on schema
-        throw new \Exception("Not implemented yet");
+        $ret = array();
+
+        if ($this->strict && $this->hasSchema()) {
+            throw new \Exception("Not implemented yet");
+        } else {
+            foreach ($this->storage->getKeys($this->rootPath) as $path) {
+
+                // Derecursification of array building
+                $parts = Path::explode($path);
+                $current = &$ret;
+                while ($key = array_shift($parts)) {
+                    $current = &$current[$key];
+                }
+
+                $current = $this->storage->read($path, ConfigType::MIXED);
+            } 
+        }
+
+        return $ret;
     }
 }

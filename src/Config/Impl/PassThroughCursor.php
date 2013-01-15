@@ -15,25 +15,27 @@ use Config\Path;
  * the unit tests does not uses it, because I was bored when I wrote it, but
  * any other serious implementation will probably use it, except if you have
  * real performance problems due to your storage mecanism architecture.
+ *
+ * This implementation is incomplete and cannot introspect itself.
  */
-final class PassThroughCursor extends AbstractSchemaAware implements
+class PassThroughCursor extends AbstractSchemaAware implements
     \IteratorAggregate,
     ConfigCursorInterface
 {
     /**
      * @var ConfigBackendInterface
      */
-    private $backend;
+    protected $backend;
 
     /**
      * @var string
      */
-    private $path;
+    protected $path;
 
     /**
      * @var string
      */
-    private $key;
+    protected $key;
 
     /**
      * Default constructor

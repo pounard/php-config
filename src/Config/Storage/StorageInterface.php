@@ -101,4 +101,14 @@ interface StorageInterface
      *                           deleted
      */
     public function delete($path, $safe = true);
+
+    /**
+     * Get existing keys list
+     *
+     * @param string $path Root path from which to lookup
+     *
+     * @return array       path list (always absolute even when a root path is
+     *                     specified)
+     */
+    public function getKeys($path = null);
 }

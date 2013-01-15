@@ -47,15 +47,15 @@ final class NullSchema implements \IteratorAggregate, SchemaInterface
      */
     public function count()
     {
-        return 0;
+      	return 0;
     }
-
+    
     /**
      * (non-PHPdoc)
      * @see IteratorAggregate::getIterator()
      */
     public function getIterator()
     {
-        return new \EmptyIterator();
+      	return new \EmptyIterator();
     }
 }
