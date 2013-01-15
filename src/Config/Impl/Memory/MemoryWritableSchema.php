@@ -16,6 +16,11 @@ class MemoryWritableSchema implements
     WritableSchemaInterface
 {
     /**
+     * @var string
+     */
+    protected $id;
+
+    /**
      * @var SchemaEntryInterface[]
      */
     protected $map = array();
@@ -23,11 +28,23 @@ class MemoryWritableSchema implements
     /**
      * Default constructor
      */
-    public function __construct(array $map = null)
+    public function __construct(array $map = null, $id = null)
     {
+        if (null !== $map) {
+            $this->id = $id;
+        }
         if (null !== $map) {
             $this->map = $map;
         }
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Config\Schema\SchemaInterface::getId()
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**

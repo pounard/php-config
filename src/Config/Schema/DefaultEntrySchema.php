@@ -9,20 +9,44 @@ use Config\ConfigType;
  */
 class DefaultEntrySchema implements EntrySchemaInterface
 {
+    /**
+     * @var string
+     */
     protected $schemaId;
 
+    /**
+     * @var string
+     */
     protected $path;
 
+    /**
+     * @var int
+     */
     protected $type;
 
+    /**
+     * @var int
+     */
     protected $listType;
 
+    /**
+     * @var string
+     */
     protected $shortDesc;
 
+    /**
+     * @var string
+     */
     protected $longDesc;
 
+    /**
+     * @var string
+     */
     protected $locale;
 
+    /**
+     * @var mixed
+     */
     protected $defaultValue;
 
     /**

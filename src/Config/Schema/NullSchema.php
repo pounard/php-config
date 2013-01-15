@@ -20,7 +20,16 @@ final class NullSchema implements \IteratorAggregate, SchemaInterface
      */
     public function __construct()
     {
-        $this->defaultEntry = new DefaultEntrySchema('none', 'none');
+        $this->defaultEntry = new DefaultEntrySchema('none', null);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Config\Schema\SchemaInterface::getId()
+     */
+    public function getId()
+    {
+        return null;
     }
 
     /**

@@ -4,15 +4,23 @@ namespace Config\Schema;
 
 /**
  * Schema browser and provider interface
- *
- * Traversable interface allows to iterate over the defined entries, keys
- * will be each entry path and value the associated entry schema information
- *
- * Countable will gives you an approximative or exact number of entries, do
- * not rely upon this for algorithmic needs
  */
 interface SchemaInterface extends \Traversable, \Countable
 {
+    /**
+     * Get schema identifier
+     *
+     * @return string Identifier
+     */
+    public function getId();
+
+    /**
+     * Get path if schema is relocatable
+     *
+     * @return string Root path
+     */
+    //public function getPath();
+
     /**
      * Get schema information for a single entry
      *

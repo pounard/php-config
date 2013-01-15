@@ -18,6 +18,11 @@ use Config\Schema\WritableSchemaInterface;
 class PDOWritableSchema implements \IteratorAggregate, WritableSchemaInterface
 {
     /**
+     * @var string
+     */
+    private $id;
+
+    /**
      * @var \PDO
      */
     private $connection;
@@ -32,10 +37,20 @@ class PDOWritableSchema implements \IteratorAggregate, WritableSchemaInterface
      *
      * @param \PDO $connection Database connection
      */
-    public function __construct(\PDO $connection)
+    public function __construct(\PDO $connection, $id = null)
     {
         $this->connection = $connection;
         $this->nullEntry  = new DefaultEntrySchema('none', 'none');
+        $this->id         = $id;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Config\Schema\SchemaInterface::getId()
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**

@@ -10,6 +10,11 @@ interface EntrySchemaInterface
     /**
      * Get schema identifier this entry comes from
      *
+     * In opposition to the SchemaInterface::getId() method which will give you
+     * the real schema identifier, this schema identifier is the one the entry
+     * comes from, which can be different from the current merged schema it is
+     * stored into
+     *
      * @return string Schema identifier
      */
     public function getSchemaId();
