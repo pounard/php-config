@@ -2,9 +2,7 @@
 
 namespace Config\Error;
 
-use Config\ConfigException;
-
-class InvalidPathException extends  \InvalidArgumentException implements 
+class InvalidPathException extends  \InvalidArgumentException implements
     ConfigException
 {
     /**
