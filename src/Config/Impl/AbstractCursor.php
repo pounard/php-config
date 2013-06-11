@@ -5,12 +5,9 @@ namespace Config\Impl;
 use Config\ConfigCursorInterface;
 use Config\ConfigType;
 use Config\Path;
-use Config\Schema\DefaultEntrySchema;
-use Config\Schema\NullSchema;
 
 /**
- * Base implementation that will fit for all configuration implementation
- * regardless of type and storage mecanism
+ * Abstract implementation of storage and schema agnostic methods
  */
 abstract class AbstractCursor extends AbstractSchemaAware implements
     \IteratorAggregate,

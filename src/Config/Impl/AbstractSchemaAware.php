@@ -6,6 +6,9 @@ use Config\Schema\NullSchema;
 use Config\Schema\SchemaAwareInterface;
 use Config\Schema\SchemaInterface;
 
+/**
+ * Abstract implementation of SchemaAwareInterface
+ */
 abstract class AbstractSchemaAware implements SchemaAwareInterface
 {
     /**
