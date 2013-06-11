@@ -22,5 +22,9 @@
         <var name="DB_USER" value="test" />
         <var name="DB_PASSWD" value="test" />
         <var name="DB_DBNAME" value="test" />
+        <var name="REDIS_HOST" value="localhost" />
+        <var name="REDIS_PORT" value="" />
+        <var name="REDIS_DB" value="2" />
+        <var name="REDIS_PASS" value="" />
     </php>
 </phpunit>
