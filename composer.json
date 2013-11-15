@@ -1,5 +1,5 @@
 {
-    "name": "pounard/php-config",
+    "name": "php-config/php-config",
     "description": "Simple configuration registry PHP interface",
     "authors": [
         {
