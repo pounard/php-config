@@ -18,6 +18,10 @@ class PredisHelper
     {
         if (null === self::$client) {
 
+            if (!class_exists('Predis\Client')) {
+                return self::$client = false;
+            }
+
             $args = array();
 
             if (!empty($GLOBALS['REDIS_HOST'])) {

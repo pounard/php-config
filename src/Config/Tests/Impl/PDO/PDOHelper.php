@@ -16,10 +16,10 @@ class PDOHelper
      */
     static public function getConnection()
     {
-        if (!isset($GLOBALS['DB_DSN']) ||
-            !isset($GLOBALS['DB_USER']) ||
-            !isset($GLOBALS['DB_PASSWD']) ||
-            !isset($GLOBALS['DB_DBNAME']))
+        if (empty($GLOBALS['DB_DSN']) ||
+            empty($GLOBALS['DB_USER']) ||
+            empty($GLOBALS['DB_PASSWD']) ||
+            empty($GLOBALS['DB_DBNAME']))
         {
             return null;
         }

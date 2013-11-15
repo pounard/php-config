@@ -20,7 +20,7 @@
     <php>
         <var name="DB_DSN" value="mysql:dbname=test;host=localhost" />
         <var name="DB_USER" value="test" />
-        <var name="DB_PASSWD" value="test" />
+        <var name="DB_PASSWD" value="" />
         <var name="DB_DBNAME" value="test" />
         <var name="REDIS_HOST" value="localhost" />
         <var name="REDIS_PORT" value="" />
