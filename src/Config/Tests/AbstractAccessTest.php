@@ -2,7 +2,7 @@
 
 namespace Config\Tests;
 
-use Config\ConfigBackendInterface;
+use Config\ConfigCursorInterface;
 use Config\Error\InvalidPathException;
 
 abstract class AbstractAccessTest extends \PHPUnit_Framework_TestCase
@@ -12,7 +12,7 @@ abstract class AbstractAccessTest extends \PHPUnit_Framework_TestCase
     /**
      * Create backend instance
      *
-     * @return ConfigBackendInterface
+     * @return ConfigCursorInterface
      */
     abstract protected function createBackend();
 

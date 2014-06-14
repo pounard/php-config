@@ -2,7 +2,7 @@
 
 namespace Config\Impl;
 
-use Config\ConfigBackendInterface;
+use Config\ConfigCursorInterface;
 use Config\ConfigType;
 use Config\Error\InvalidPathException;
 use Config\Path;
@@ -40,7 +40,7 @@ use Config\Storage\StorageInterface;
  * always store values trying to determine their type dynmically (which is
  * bad).
  */
-class StoredBackend extends AbstractCursor implements ConfigBackendInterface
+class StoredBackend extends AbstractCursor implements ConfigCursorInterface
 {
     /**
      * @var StorageInterface

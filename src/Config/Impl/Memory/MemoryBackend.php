@@ -2,7 +2,7 @@
 
 namespace Config\Impl\Memory;
 
-use Config\ConfigBackendInterface;
+use Config\ConfigCursorInterface;
 use Config\Error\InvalidPathException;
 use Config\Impl\AbstractCursor;
 use Config\Impl\PassThroughCursor;
@@ -23,7 +23,7 @@ use Config\Schema\SchemaInterface;
  * @endcode
  * Disregarding the original interface documentation
  */
-class MemoryBackend extends AbstractCursor implements ConfigBackendInterface
+class MemoryBackend extends AbstractCursor implements ConfigCursorInterface
 {
     /**
      * Internal data.

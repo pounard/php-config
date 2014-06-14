@@ -2,7 +2,6 @@
 
 namespace Config\Impl;
 
-use Config\ConfigBackendInterface;
 use Config\ConfigCursorInterface;
 use Config\Path;
 
@@ -23,7 +22,7 @@ class PassThroughCursor extends AbstractSchemaAware implements
     ConfigCursorInterface
 {
     /**
-     * @var ConfigBackendInterface
+     * @var ConfigCursorInterface
      */
     protected $backend;
 
@@ -40,11 +39,11 @@ class PassThroughCursor extends AbstractSchemaAware implements
     /**
      * Default constructor
      *
-     * @param ConfigBackendInterface $backend Cursor backend
-     * @param string $path                    Cursor path
+     * @param ConfigCursorInterface $backend Cursor backend
+     * @param string $path                   Cursor path
      */
     public function __construct(
-        ConfigBackendInterface $backend,
+        ConfigCursorInterface $backend,
         $path)
     {
         $this->backend = $backend;
