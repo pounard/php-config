@@ -82,7 +82,7 @@ class PDOStorage implements StorageInterface
             if (ConfigType::MIXED === $expectedType) {
                 if (null === $this->readStatement) {
                     $statement = $this->readStatement = $this->connection->prepare("
-                        SELECT value
+                        SELECT s.value
                         FROM php_config_storage s
                         WHERE s.path = :path");
 
